@@ -1,0 +1,19 @@
+#pragma once
+
+#include "Scene.h"
+#include "Model.h"
+#include "Lights.h"
+#include "ObjectManager.h"
+#include "CameraController.h"
+#include "Renderer.h"
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "Texture.h"
+#include "Utils.h"
+#include "FileUtils.h"
+#include "Constants.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
+#include "ObjectWidgets.h"
+#include "LightWidgets.h"
+#include "MaterialWidgets.h"
