@@ -1,6 +1,4 @@
 # OpenGL Collection
- 
-# OpenGL Collection
 
 This repository contains **OpenGL Collection**, a C++ application inspired by the [Learn OpenGL](https://learnopengl.com/) tutorials. It offers an interactive interface to explore various OpenGL features, test them, and tweak their parameters in real time.
 
