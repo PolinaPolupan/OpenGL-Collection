@@ -35,6 +35,7 @@
 #include "NormalMapping.h"
 #include "ParallaxMapping.h"
 #include "Hdr.h"
+#include "Bloom.h"
 
 #include "assimp/Importer.hpp"
 
@@ -125,6 +126,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::NormalMapping>("Normal Mapping");
     sceneMenu->RegisterScene<scene::ParallaxMapping>("Parallax Mapping");
     sceneMenu->RegisterScene<scene::Hdr>("Hdr");
+    sceneMenu->RegisterScene<scene::Bloom>("Bloom");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;

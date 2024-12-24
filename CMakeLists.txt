@@ -49,13 +49,16 @@ src/ext/imgui/imgui_tables.cpp
 src/ext/imgui/imgui_widgets.cpp
 src/ext/imgui/backends/imgui_impl_opengl3.cpp
 src/ext/imgui/backends/imgui_impl_glfw.cpp
+src/learnOpenGL/utils/FileUtils.cpp
+src/learnOpenGL/utils/Utils.cpp
+src/learnOpenGL/scene/Bloom.cpp
 )
 
 set(STB_IMAGE_SOURCE
 src/ext/stb_image/stb_image.cpp
 )
 
-add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE} "src/learnOpenGL/utils/FileUtils.h" "src/learnOpenGL/utils/FileUtils.cpp" "src/learnOpenGL/utils/Utils.cpp")
+add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE})
 
 add_subdirectory(src/ext/glad EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/glfw EXCLUDE_FROM_ALL)
