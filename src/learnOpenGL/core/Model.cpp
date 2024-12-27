@@ -23,13 +23,13 @@ using namespace std;
 
 Model::Model(const char* path)
 {
-    name = std::string(path);
+    name = std::filesystem::path(path).filename().string();
     m_Directory = std::filesystem::path(path).parent_path().string() + "\\";
 }
 
 Model::Model(const std::filesystem::path& path)
 {
-    name = path.string();
+    name = path.filename().string();
     m_Directory = std::filesystem::path(path).parent_path().string() + "\\";
 }
 
@@ -42,7 +42,8 @@ void Model::LoadModel(const std::filesystem::path& path)
 
 void Model::LoadModel(std::string path)
 {
-    name = std::string(path);
+    name = std::filesystem::path(path).filename().string();
+
     const aiScene* scene = m_Importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

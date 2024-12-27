@@ -70,7 +70,9 @@ static void LoadObjectsList(std::vector<std::string>& modelsPaths, ObjectManager
                 const bool is_selected = (item_current_idx == n);
                 auto pos = modelsPaths[n].find_last_of("\\");
 
-                if (ImGui::Selectable(modelsPaths[n].c_str(), is_selected))
+                std::string name = std::filesystem::path(modelsPaths[n]).filename().string();
+
+                if (ImGui::Selectable(name.c_str(), is_selected))
                 {
                     item_current_idx = n;
                     objectManager.addObject(modelsPaths[n]);
