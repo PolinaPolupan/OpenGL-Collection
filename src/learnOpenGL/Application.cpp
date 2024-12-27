@@ -36,6 +36,7 @@
 #include "ParallaxMapping.h"
 #include "Hdr.h"
 #include "Bloom.h"
+#include "DeferredShading.h"
 
 #include "assimp/Importer.hpp"
 
@@ -127,6 +128,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::ParallaxMapping>("Parallax Mapping");
     sceneMenu->RegisterScene<scene::Hdr>("Hdr");
     sceneMenu->RegisterScene<scene::Bloom>("Bloom");
+    sceneMenu->RegisterScene<scene::DeferredShading>("Deferred Shading");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;
