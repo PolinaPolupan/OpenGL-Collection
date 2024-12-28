@@ -14,6 +14,8 @@ public:
 
     void addObject(std::string& path);
 
+    void deleteObject(const int& n);
+
     void update();
 
     void clear();
@@ -26,4 +28,5 @@ public:
 private:
     std::vector <std::shared_ptr<Model>> m_objects;
     std::vector<std::shared_ptr<Model>> m_objectsToAdd;
+    std::vector<int> m_objectsToDelete;
 };

@@ -45,6 +45,18 @@ static void ObjectsList(ObjectManager& objectManager)
                     objectManager.getObjects()[objectManager.current_selected_object]->isSelected = false;
                     objectManager.current_selected_object = n;
                     objectManager.getObjects()[objectManager.current_selected_object]->isSelected = true;
+
+                    // Context menu
+                    if (ImGui::BeginPopupContextWindow())
+                    {
+                        ImGui::Text(objectManager.getObjects()[objectManager.current_selected_object]->name.c_str());
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Delete", "Del")) {
+                            objectManager.deleteObject(n);
+                        }
+
+                        ImGui::EndPopup();
+                    }
                 }
                     
             }
