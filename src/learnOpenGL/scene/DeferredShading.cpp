@@ -90,7 +90,7 @@ scene::DeferredShading::DeferredShading()
 
     quadVAO->AddBuffer(*quadVBO, quadLayout);
 
-	modelsPaths = getObjectsPath();
+    modelsPaths = getObjectsPath();
 
     objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
     objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));
@@ -135,7 +135,7 @@ scene::DeferredShading::DeferredShading()
     // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
     glDrawBuffers(3, attachments);
     // create and attach depth buffer (renderbuffer)
-    
+
     glGenRenderbuffers(1, &rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
@@ -198,23 +198,23 @@ scene::DeferredShading::~DeferredShading()
     shaderLightBox->Unbind();
     shaderLightingPass->Unbind();
     shaderFlat->Unbind();
-	objectManager.clear();
+    objectManager.clear();
 }
 
 void scene::DeferredShading::OnUpdate(float deltaTime)
 {
-	cameraController.OnUpdate(deltaTime);
-	objectManager.update();
+    cameraController.OnUpdate(deltaTime);
+    objectManager.update();
 }
 
 void scene::DeferredShading::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+    cameraController.rotateCamera(posX, posY);
 }
 
 void scene::DeferredShading::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-	cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.zoomCamera(offsetX, offsetY);
 }
 
 void scene::DeferredShading::OnRender()
@@ -327,7 +327,7 @@ void scene::DeferredShading::OnRender()
 
 void scene::DeferredShading::OnImGuiRender()
 {
-	LoadObjectsList(modelsPaths, objectManager);
+    LoadObjectsList(modelsPaths, objectManager);
 
     static int texture = -1;
 
@@ -352,5 +352,5 @@ void scene::DeferredShading::OnImGuiRender()
 
 void scene::DeferredShading::OnEvent(int event)
 {
-	cameraController.processInput(event);
+    cameraController.processInput(event);
 }

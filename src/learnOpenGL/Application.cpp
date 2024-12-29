@@ -37,6 +37,7 @@
 #include "Hdr.h"
 #include "Bloom.h"
 #include "DeferredShading.h"
+#include "SSAO.h"
 
 #include "assimp/Importer.hpp"
 
@@ -129,6 +130,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::Hdr>("Hdr");
     sceneMenu->RegisterScene<scene::Bloom>("Bloom");
     sceneMenu->RegisterScene<scene::DeferredShading>("Deferred Shading");
+    sceneMenu->RegisterScene<scene::SSAO>("SSAO");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;
