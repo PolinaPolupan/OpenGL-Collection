@@ -14,7 +14,8 @@ namespace scene
 		std::shared_ptr<VertexArray> sphereVAO;
 		std::shared_ptr<IndexBuffer> sphereIBO;
 		std::shared_ptr<VertexBuffer> sphereVBO;
-		std::shared_ptr<Shader> shader;
+		std::shared_ptr<Shader> shader, shaderTextured;
+		std::shared_ptr<Texture> albedo, normal, metallic, roughness, ao;
 
 		glm::vec3 lightPos = glm::vec3(2.0, 4.0, -2.0);
 		glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
@@ -31,6 +32,7 @@ namespace scene
 		float spacing = 2.5;
 
 		unsigned int indexCount;
+		bool textured = false;
 
 		void OnUpdate(float deltaTime) override;
 		void OnMouseMovedEvent(double posX, double posY) override;

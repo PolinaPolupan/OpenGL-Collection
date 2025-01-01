@@ -82,10 +82,24 @@ scene::PBR::PBR()
     indexCount = static_cast<unsigned int>(indices.size());
 
     shader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBR.shader"));
+    shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRTextured.shader"));
+
+    albedo = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\albedo.png"));
+    roughness = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\roughness.png"));
+    normal = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\normal.png"));
+    metallic = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\metallic.png"));
+    ao = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\ao.jpg"));
 
     shader->Bind();
     shader->SetUniform3f("albedo", 0.5f, 0.0f, 0.0f);
     shader->SetUniform1f("ao", 1.0f);
+
+    shaderTextured->Bind();
+    shaderTextured->SetUniform1i("albedoMap", 0);
+    shaderTextured->SetUniform1i("normalMap", 1);
+    shaderTextured->SetUniform1i("metallicMap", 2);
+    shaderTextured->SetUniform1i("roughnessMap", 3);
+    shaderTextured->SetUniform1i("aoMap", 4);
 
     // lights
     // ------
@@ -103,6 +117,7 @@ scene::PBR::PBR()
     };
 
     shader->Unbind();
+    shaderTextured->Unbind();
     sphereVAO->Unbind();
     sphereVBO->Unbind();
     sphereIBO->Unbind();
@@ -111,6 +126,7 @@ scene::PBR::PBR()
 scene::PBR::~PBR()
 {
     shader->Unbind();
+    shaderTextured->Unbind();
     sphereVAO->Unbind();
     sphereVBO->Unbind();
     sphereIBO->Unbind();
@@ -146,55 +162,113 @@ void scene::PBR::OnRender()
     shader->SetUniformMat4f("view", view);
     shader->SetUniform3f("camPos", cameraController.getCameraPos());
 
+    shaderTextured->Bind();
+    shaderTextured->SetUniformMat4f("projection", projection);
+    shaderTextured->SetUniformMat4f("view", view);
+    shaderTextured->SetUniform3f("camPos", cameraController.getCameraPos());
+
     // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
     glm::mat4 model = glm::mat4(1.0f);
-    for (int row = 0; row < nrRows; ++row)
-    {
-        shader->Bind();
-        shader->SetUniform1f("metallic", (float)row / (float)nrRows);
-        for (int col = 0; col < nrColumns; ++col)
+
+    if (textured) {
+        albedo->Bind();
+        normal->Bind(1);
+        metallic->Bind(2);
+        roughness->Bind(3);
+        ao->Bind(4);
+
+        for (int row = 0; row < nrRows; ++row)
         {
-            shader->Bind();
-            // we clamp the roughness to 0.05 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
-            // on direct lighting.
-            shader->SetUniform1f("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+            for (int col = 0; col < nrColumns; ++col)
+            {
+                shaderTextured->Bind();
+             
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(
+                    (col - (nrColumns / 2)) * spacing,
+                    (row - (nrRows / 2)) * spacing,
+                    0.0f
+                ));
+                shaderTextured->SetUniformMat4f("model", model);
+                shaderTextured->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+                sphereVAO->Bind();
+                glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+            }
+        }
+
+        // render light source (simply re-render sphere at light positions)
+    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+    // keeps the codeprint small.
+        for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+        {
+            shaderTextured->Bind();
+            glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+            newPos = lightPositions[i];
+            shaderTextured->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
+            shaderTextured->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 
             model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(
-                (col - (nrColumns / 2)) * spacing,
-                (row - (nrRows / 2)) * spacing,
-                0.0f
-            ));
+            model = glm::translate(model, newPos);
+            model = glm::scale(model, glm::vec3(0.5f));
+            shaderTextured->SetUniformMat4f("model", model);
+            shaderTextured->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+            sphereVAO->Bind();
+            glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+        }
+    }
+    else {
+        for (int row = 0; row < nrRows; ++row)
+        {
+            shader->Bind();
+            shader->SetUniform1f("metallic", (float)row / (float)nrRows);
+            for (int col = 0; col < nrColumns; ++col)
+            {
+                shader->Bind();
+                // we clamp the roughness to 0.05 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
+                // on direct lighting.
+                shader->SetUniform1f("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(
+                    (col - (nrColumns / 2)) * spacing,
+                    (row - (nrRows / 2)) * spacing,
+                    0.0f
+                ));
+                shader->SetUniformMat4f("model", model);
+                shader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+                sphereVAO->Bind();
+                glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+            }
+        }
+
+        // render light source (simply re-render sphere at light positions)
+    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+    // keeps the codeprint small.
+        for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+        {
+            shader->Bind();
+            glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+            newPos = lightPositions[i];
+            shader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
+            shader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, newPos);
+            model = glm::scale(model, glm::vec3(0.5f));
             shader->SetUniformMat4f("model", model);
             shader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
             sphereVAO->Bind();
             glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
         }
     }
-
-    // render light source (simply re-render sphere at light positions)
-    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
-    // keeps the codeprint small.
-    for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
-    {
-        shader->Bind();
-        glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-        newPos = lightPositions[i];
-        shader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
-        shader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
-
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, newPos);
-        model = glm::scale(model, glm::vec3(0.5f));
-        shader->SetUniformMat4f("model", model);
-        shader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-        sphereVAO->Bind();
-        glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-    }
 }
 
 void scene::PBR::OnImGuiRender()
 {
+    static bool checked = false;
+    ImGui::Checkbox("Textured", &checked);
+
+    textured = checked;
 }
 
 void scene::PBR::OnEvent(int event)
