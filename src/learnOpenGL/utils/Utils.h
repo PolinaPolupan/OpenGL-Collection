@@ -12,8 +12,8 @@ std::string getLightTypeName(LightType lightType);
 
 LightType getLightTypeByName(std::string name);
 
-std::vector<std::string> getTexturesPath();
+std::vector<std::string> getTexturesPath(const std::vector<std::string>& extensions = {".jpeg", ".jpg", ".png"});
 
 std::vector<std::string> getObjectsPath();
 
-std::vector<std::unique_ptr<Texture>> getTextures();
+std::vector<std::unique_ptr<Texture>> getTextures(const std::vector<std::string>& extensions = { ".jpeg", ".jpg", ".png" });

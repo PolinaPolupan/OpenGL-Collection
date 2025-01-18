@@ -33,6 +33,7 @@ src/learnOpenGL/Renderer.cpp
 "src/learnOpenGL/scene/SSAO.cpp"
 "src/learnOpenGL/scene/Hdr.cpp"
 "src/learnOpenGL/scene/PBR.cpp"
+"src/learnOpenGL/scene/DiffuseIrradiance.cpp"
 "src/learnOpenGL/core/Lights.cpp"
 "src/learnOpenGL/core/Mesh.cpp"
 "src/learnOpenGL/core/Model.cpp"

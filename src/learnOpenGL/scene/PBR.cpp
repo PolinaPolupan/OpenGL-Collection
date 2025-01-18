@@ -121,6 +121,11 @@ scene::PBR::PBR()
     sphereVAO->Unbind();
     sphereVBO->Unbind();
     sphereIBO->Unbind();
+    albedo->Unbind();
+    roughness->Unbind();
+    normal->Unbind();
+    metallic->Unbind();
+    ao->Unbind();
 }
 
 scene::PBR::~PBR()
@@ -130,6 +135,11 @@ scene::PBR::~PBR()
     sphereVAO->Unbind();
     sphereVBO->Unbind();
     sphereIBO->Unbind();
+    albedo->Unbind();
+    roughness->Unbind();
+    normal->Unbind();
+    metallic->Unbind();
+    ao->Unbind();
 }
 
 void scene::PBR::OnUpdate(float deltaTime)

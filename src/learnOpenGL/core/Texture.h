@@ -56,4 +56,8 @@ public:
 			return "standard";
 		}
 	}
+
+private:
+	void init(const char* path, TextureType textureType, bool gammaCorrection);
+	void initHdr(const char* path, TextureType textureType, bool gammaCorrection);
 };

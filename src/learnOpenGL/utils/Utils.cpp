@@ -79,16 +79,19 @@ LightType getLightTypeByName(std::string name)
     return LightType::Default;
 }
 
-std::vector<std::string> getTexturesPath()
+std::vector<std::string> getTexturesPath(const std::vector<std::string>& extensions)
 {
     std::vector<std::string> textures;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(GetResourcePath("res/textures")))
     {
         std::string path = entry.path().string();
 
-        if (path.find(".jpeg") != std::string::npos || path.find(".jpg") != std::string::npos || path.find(".png") != std::string::npos) {
-            std::cout << path << std::endl;
-            textures.push_back(path);
+        for (auto& ext : extensions) {
+            if (path.find(ext) != std::string::npos) {
+                std::cout << path << std::endl;
+                textures.push_back(path);
+                break;
+            }
         }
     }
 
@@ -111,10 +114,10 @@ std::vector<std::string> getObjectsPath()
     return objects;
 }
 
-std::vector<std::unique_ptr<Texture>> getTextures()
+std::vector<std::unique_ptr<Texture>> getTextures(const std::vector<std::string>& extensions)
 {
     std::vector<std::unique_ptr<Texture>> textures;
-    for (auto& path : getTexturesPath())
+    for (auto& path : getTexturesPath(extensions))
     {
         textures.push_back(std::make_unique<Texture>(path, TextureType::Standard));
     }

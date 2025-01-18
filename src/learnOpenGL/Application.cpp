@@ -39,6 +39,7 @@
 #include "DeferredShading.h"
 #include "SSAO.h"
 #include "PBR.h"
+#include "DiffuseIrradiance.h"
 
 #include "assimp/Importer.hpp"
 
@@ -133,6 +134,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::DeferredShading>("Deferred Shading");
     sceneMenu->RegisterScene<scene::SSAO>("SSAO");
     sceneMenu->RegisterScene<scene::PBR>("PBR");
+    sceneMenu->RegisterScene<scene::DiffuseIrradiance>("Diffuse Irradiance");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;
