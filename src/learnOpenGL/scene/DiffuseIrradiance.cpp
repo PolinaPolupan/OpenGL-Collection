@@ -150,7 +150,7 @@ scene::DiffuseIrradiance::DiffuseIrradiance()
     textures = getTextures({ ".hdr" });
 
     shader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\IBL.shader"));
-    shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRTextured.shader"));
+    shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\IBLTextured.shader"));
     equirectangularToCubemapShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\EquirectangularToCubemap.shader"));
     backgroundShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Background.shader"));
     irradianceShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Irradiance.shader"));
@@ -162,6 +162,7 @@ scene::DiffuseIrradiance::DiffuseIrradiance()
     ao = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\ao.jpg"));
     hdr = std::make_shared<Texture>(GetResourcePath("res\\textures\\photo_studio_loft_hall_4k.hdr"));
 
+    
 
     bakeIrradiance();
 
@@ -174,11 +175,13 @@ scene::DiffuseIrradiance::DiffuseIrradiance()
     backgroundShader->SetUniform1i("environmentMap", 0);
 
     shaderTextured->Bind();
-    shaderTextured->SetUniform1i("albedoMap", 0);
-    shaderTextured->SetUniform1i("normalMap", 1);
-    shaderTextured->SetUniform1i("metallicMap", 2);
-    shaderTextured->SetUniform1i("roughnessMap", 3);
-    shaderTextured->SetUniform1i("aoMap", 4);
+    
+    shaderTextured->SetUniform1i("irradianceMap", 0);
+    shaderTextured->SetUniform1i("albedoMap", 1);
+    shaderTextured->SetUniform1i("normalMap", 2);
+    shaderTextured->SetUniform1i("metallicMap", 3);
+    shaderTextured->SetUniform1i("roughnessMap", 4);
+    shaderTextured->SetUniform1i("aoMap", 5);
 
     // lights
     // ------
@@ -274,11 +277,11 @@ void scene::DiffuseIrradiance::OnRender()
     glm::mat4 model = glm::mat4(1.0f);
 
     if (textured) {
-        albedo->Bind();
-        normal->Bind(1);
-        metallic->Bind(2);
-        roughness->Bind(3);
-        ao->Bind(4);
+        albedo->Bind(1);
+        normal->Bind(2);
+        metallic->Bind(3);
+        roughness->Bind(4);
+        ao->Bind(5);
 
         for (int row = 0; row < nrRows; ++row)
         {
@@ -368,7 +371,7 @@ void scene::DiffuseIrradiance::OnRender()
     equirectangularToCubemapShader->Bind();
     view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
     equirectangularToCubemapShader->SetUniformMat4f("view", view);
-
+    equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f - transparency);
     hdr->Bind();
     renderer.Draw(*cubeVAO, *cubeIBO, *equirectangularToCubemapShader);
 }
@@ -379,6 +382,8 @@ void scene::DiffuseIrradiance::OnImGuiRender()
     ImGui::Checkbox("Textured", &checked);
 
     textured = checked;
+
+    ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
 
     for (int i = 0; i < textures.size(); i++)
     {
@@ -405,11 +410,13 @@ void scene::DiffuseIrradiance::OnEvent(int event)
 
 void scene::DiffuseIrradiance::bakeIrradiance()
 {
-
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // pbr: setup framebuffer
     // ----------------------
@@ -427,13 +434,14 @@ void scene::DiffuseIrradiance::bakeIrradiance()
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
     for (unsigned int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, 512, 512, 0, GL_RGBA, GL_FLOAT, nullptr);
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
 
     // pbr: set up projection and view matrices for capturing data onto the 6 cubemap face directions
     // ----------------------------------------------------------------------------------------------
@@ -450,6 +458,7 @@ void scene::DiffuseIrradiance::bakeIrradiance()
     // pbr: convert HDR equirectangular environment map to cubemap equivalent
     // ----------------------------------------------------------------------
     equirectangularToCubemapShader->Bind();
+    equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f);
     equirectangularToCubemapShader->SetUniform1i("equirectangularMap", 0);
     equirectangularToCubemapShader->SetUniformMat4f("projection", captureProjection);
     hdr->Bind();
@@ -473,7 +482,7 @@ void scene::DiffuseIrradiance::bakeIrradiance()
     glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
     for (unsigned int i = 0; i < 6; ++i)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_FLOAT, nullptr);
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -508,5 +517,4 @@ void scene::DiffuseIrradiance::bakeIrradiance()
 
     // then before rendering, configure the viewport to the original framebuffer's screen dimensions
     glViewport(0, 0, WIDTH, HEIGHT);
-
 }

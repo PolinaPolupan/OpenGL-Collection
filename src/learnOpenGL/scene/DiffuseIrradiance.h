@@ -40,6 +40,8 @@ namespace scene
 		unsigned int captureRBO;
 		unsigned int irradianceMap;
 
+		float transparency = 0.0f;
+
 		void OnUpdate(float deltaTime) override;
 		void OnMouseMovedEvent(double posX, double posY) override;
 		void OnMouseScrolledEvent(double offsetX, double offsetY) override;
