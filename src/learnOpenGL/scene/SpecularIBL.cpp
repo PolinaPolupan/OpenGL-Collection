@@ -541,6 +541,29 @@ void scene::SpecularIBL::OnRender()
 
 void scene::SpecularIBL::OnImGuiRender()
 {
+    static bool checked = false;
+    ImGui::Checkbox("Textured", &checked);
+
+    textured = checked;
+
+    ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
+
+    for (int i = 0; i < textures.size(); i++)
+    {
+        if (i % 3 == 0)
+        {
+            ImGui::NewLine();
+        }
+        else
+        {
+            ImGui::SameLine();
+        }
+        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
+        {
+            hdr = std::make_shared<Texture>(textures[i]->getPath());
+           // bakeIrradiance();
+        }
+    }
 }
 
 void scene::SpecularIBL::OnEvent(int event)

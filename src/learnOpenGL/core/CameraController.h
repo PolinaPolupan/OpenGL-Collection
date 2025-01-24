@@ -26,26 +26,35 @@ public:
 
     void processInput(int event)
     {
-        if (event == GLFW_KEY_W)
+        switch (event) {
+        case GLFW_KEY_W:
             m_Camera.CameraPos += m_Camera.CameraSpeed * m_Camera.CameraFront * m_DeltaTime;
-        if (event == GLFW_KEY_S)
+            break;
+        case GLFW_KEY_S:
             m_Camera.CameraPos -= m_Camera.CameraSpeed * m_Camera.CameraFront * m_DeltaTime;
-        if (event == GLFW_KEY_A)
+            break;
+        case GLFW_KEY_A:
             m_Camera.CameraPos -= glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
-        if (event == GLFW_KEY_D)
+            break;
+        case GLFW_KEY_D:
             m_Camera.CameraPos += glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
-        if (event == GLFW_KEY_UP) {
+            break;
+        case GLFW_KEY_UP:
             rotateByAngle(m_Camera.Yaw, m_Camera.Pitch + 0.05f);
-        }
-        if (event == GLFW_KEY_DOWN) {
+            break;
+        case GLFW_KEY_DOWN:
             rotateByAngle(m_Camera.Yaw, m_Camera.Pitch - 0.05f);
-        }
-        if (event == GLFW_KEY_LEFT) {
+            break;
+        case GLFW_KEY_LEFT:
             rotateByAngle(m_Camera.Yaw + 0.05f, m_Camera.Pitch);
-        }
-        if (event == GLFW_KEY_RIGHT) {
+            break;
+        case GLFW_KEY_RIGHT:
             rotateByAngle(m_Camera.Yaw - 0.05f, m_Camera.Pitch);
+            break;
+        default:
+            break;
         }
+
     }
 
     void rotateCamera(float mousePosX, float mousePosY)
