@@ -34,6 +34,18 @@ public:
             m_Camera.CameraPos -= glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
         if (event == GLFW_KEY_D)
             m_Camera.CameraPos += glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
+        if (event == GLFW_KEY_UP) {
+            rotateByAngle(m_Camera.Yaw, m_Camera.Pitch + 0.05f);
+        }
+        if (event == GLFW_KEY_DOWN) {
+            rotateByAngle(m_Camera.Yaw, m_Camera.Pitch - 0.05f);
+        }
+        if (event == GLFW_KEY_LEFT) {
+            rotateByAngle(m_Camera.Yaw + 0.05f, m_Camera.Pitch);
+        }
+        if (event == GLFW_KEY_RIGHT) {
+            rotateByAngle(m_Camera.Yaw - 0.05f, m_Camera.Pitch);
+        }
     }
 
     void rotateCamera(float mousePosX, float mousePosY)
@@ -68,6 +80,23 @@ public:
          m_Camera.CameraFront = glm::normalize(front);
     }
 
+    void rotateByAngle(float yaw, float pitch) {
+        m_Camera.Yaw = yaw;
+        m_Camera.Pitch = pitch;
+
+        // make sure that when Pitch is out of bounds, screen doesn't get flipped
+        if (m_Camera.Pitch > 89.0f)
+            m_Camera.Pitch = 89.0f;
+        if (m_Camera.Pitch < -89.0f)
+            m_Camera.Pitch = -89.0f;
+
+        glm::vec3 front;
+        front.x = cos(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
+        front.y = sin(glm::radians(m_Camera.Pitch));
+        front.z = sin(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
+        m_Camera.CameraFront = glm::normalize(front);
+    }
+ 
     void zoomCamera(double xoffset, double yoffset)
     {
         m_Camera.FOV -= (float)yoffset  * m_Camera.Sensitivity;

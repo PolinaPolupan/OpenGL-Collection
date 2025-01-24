@@ -525,15 +525,6 @@ void scene::SpecularIBL::OnRender()
         glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
     }
 
-    //// render skybox (render as last to prevent overdraw)
-    //backgroundShader->Bind();
-    //backgroundShader->SetUniformMat4f("view", view);
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-    ////glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // display irradiance map
-    ////glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap); // display prefilter map
-    //renderer.Draw(*cubeVAO, *cubeIBO, *backgroundShader);
-
     equirectangularToCubemapShader->Bind();
     view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
     equirectangularToCubemapShader->SetUniformMat4f("view", view);

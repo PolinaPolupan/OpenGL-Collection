@@ -52,9 +52,13 @@ float mouseY;
 float offsetX;
 float offsetY;
 
+int globalKey;
+int globalAction;
+
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(void)
 {
@@ -91,6 +95,7 @@ int main(void)
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -142,7 +147,7 @@ int main(void)
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
-    int events[] = { GLFW_KEY_W , GLFW_KEY_S , GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_Q, GLFW_KEY_E };
+    int events[] = { GLFW_KEY_W , GLFW_KEY_S , GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_UP };
     float deltaTime = 0.0f;	// Time between current frame and last frame
     float lastFrame = 0.0f; // Time of last frame
 
@@ -165,13 +170,12 @@ int main(void)
         {
             currentTest->OnUpdate(deltaTime);
 
-            for (auto& event : events)
+      
+            if (glfwGetKey(window, globalKey))
             {
-                if (glfwGetKey(window, event) == GLFW_PRESS)
-                {
-                    currentTest->OnEvent(event);
-                }
+                currentTest->OnEvent(globalKey);
             }
+            
             currentTest->OnMouseMovedEvent(mouseX, mouseY);
             currentTest->OnMouseScrolledEvent(offsetX, offsetY);
             currentTest->OnRender();
@@ -223,4 +227,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    globalKey = key;
+    globalAction = action;
+    std::cout << "Registered key: " << key << std::endl;
 }
