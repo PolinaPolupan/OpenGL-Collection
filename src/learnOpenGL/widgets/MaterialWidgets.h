@@ -11,7 +11,7 @@
 #include "imgui.h"
 #include "FileUtils.h"
 
-static void materialMapBrowser(std::vector<std::unique_ptr<Texture>>& textures, Material& material, TextureType& TextureType)
+static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, Material& material, TextureType& TextureType)
 {
     for (int i = 0; i < textures.size(); i++)
     {

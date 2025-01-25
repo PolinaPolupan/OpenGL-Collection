@@ -10,7 +10,7 @@ namespace scene {
 		glm::vec3 backgroundColor;
 	
 		LightManager lightManager;
-		std::vector<std::unique_ptr<Texture>> textures;
+		std::vector<std::shared_ptr<Texture>> textures;
 
 		BasicLighting();
 		~BasicLighting();

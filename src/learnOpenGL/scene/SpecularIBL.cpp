@@ -1,3 +1,5 @@
+#include <functional>
+
 #include "SpecularIBL.h"
 
 scene::SpecularIBL::SpecularIBL()
@@ -169,6 +171,16 @@ scene::SpecularIBL::SpecularIBL()
 
     indexCount = static_cast<unsigned int>(indices.size());
 
+    hdr = std::make_shared<Texture>(GetResourcePath("res\\textures\\photo_studio_loft_hall_4k.hdr"));
+
+    albedoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
+    roughnessTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
+    normalTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
+    aoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
+
+    textures = getTextures({ ".hdr" });
+    mapTextures = getTextures();
+
     pbrShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecular.shader"));
     shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecularTextured.shader"));
     equirectangularToCubemapShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\EquirectangularToCubemap.shader"));
@@ -177,13 +189,12 @@ scene::SpecularIBL::SpecularIBL()
     prefilterShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Prefilter.shader"));
     brdfShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\BRDF.shader"));
 
+    albedoColor = glm::vec3(0.5, 0, 0);
 
     pbrShader->Bind();
     pbrShader->SetUniform1i("irradianceMap", 0);
     pbrShader->SetUniform1i("prefilterMap", 1);
     pbrShader->SetUniform1i("brdfLUT", 2);
-    pbrShader->SetUniform3f("albedo", glm::vec3(0.5, 0, 0));
-    pbrShader->SetUniform1f("ao", 1.0f);
 
     backgroundShader->Bind();
     backgroundShader->SetUniform1i("environmentMap", 0);
@@ -206,6 +217,244 @@ scene::SpecularIBL::SpecularIBL()
     int nrColumns = 7;
     float spacing = 2.5;
 
+    BakeMaps();
+
+    cubeVAO->Unbind();
+    cubeIBO->Unbind();
+    cubeVBO->Unbind();
+    sphereVAO->Unbind();
+    sphereIBO->Unbind();
+    sphereVBO->Unbind();
+    quadVAO->Unbind();
+    quadVBO->Unbind();
+    quadIBO->Unbind();
+    pbrShader->Unbind();
+    shaderTextured->Unbind();
+    equirectangularToCubemapShader->Unbind();
+    backgroundShader->Unbind();
+    irradianceShader->Unbind();
+    prefilterShader->Unbind();
+    brdfShader->Unbind();
+    hdr->Unbind();
+}
+
+scene::SpecularIBL::~SpecularIBL()
+{
+    cubeVAO->Unbind();
+    cubeIBO->Unbind();
+    cubeVBO->Unbind();
+    sphereVAO->Unbind();
+    sphereIBO->Unbind();
+    sphereVBO->Unbind();
+    quadVAO->Unbind();
+    quadVBO->Unbind();
+    quadIBO->Unbind();
+    pbrShader->Unbind();
+    shaderTextured->Unbind();
+    equirectangularToCubemapShader->Unbind();
+    backgroundShader->Unbind();
+    irradianceShader->Unbind();
+    prefilterShader->Unbind();
+    brdfShader->Unbind();
+    hdr->Unbind();
+}
+
+void scene::SpecularIBL::OnUpdate(float deltaTime)
+{
+	cameraController.OnUpdate(deltaTime);
+}
+
+void scene::SpecularIBL::OnMouseMovedEvent(double posX, double posY)
+{
+	cameraController.rotateCamera(posX, posY);
+}
+
+void scene::SpecularIBL::OnMouseScrolledEvent(double offsetX, double offsetY)
+{
+}
+
+void scene::SpecularIBL::OnRender()
+{
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    renderer.Submit(cameraController.getCamera());
+
+    cameraController.getCamera().Sensitivity = 0.005f;
+
+    // render scene, supplying the convoluted irradiance map to the final shader.
+    // ------------------------------------------------------------------------------------------
+    pbrShader->Bind();
+    renderer.Submit(cameraController.getCamera());
+    glm::mat4 view = cameraController.getViewMatrix();
+    pbrShader->SetUniformMat4f("view", view);
+    pbrShader->SetUniform3f("camPos", cameraController.getCameraPos());
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    pbrShader->SetUniformMat4f("projection", projection);
+
+    pbrShader->SetUniform3f("albedo", albedoColor);
+
+    // bind pre-computed IBL data
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+
+    // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
+    glm::mat4 model = glm::mat4(1.0f);
+
+    pbrShader->Bind();
+    pbrShader->SetUniform1f("metallic", metallic);
+    pbrShader->SetUniform1f("roughness", roughness);
+    pbrShader->SetUniform1f("ao", ao);
+    pbrShader->SetUniformMat4f("model", model);
+    pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+    sphereVAO->Bind();
+    glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+
+
+    // render light source (simply re-render sphere at light positions)
+    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+    // keeps the codeprint small.
+    for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+    {
+        pbrShader->Bind();
+        glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+        newPos = lightPositions[i];
+        pbrShader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
+        pbrShader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, newPos);
+        model = glm::scale(model, glm::vec3(0.5f));
+        pbrShader->SetUniformMat4f("model", model);
+        pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+        sphereVAO->Bind();
+        glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+    }
+
+    equirectangularToCubemapShader->Bind();
+    view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
+    equirectangularToCubemapShader->SetUniformMat4f("view", view);
+    equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f - transparency);
+    hdr->Bind();
+    renderer.Draw(*cubeVAO, *cubeIBO, *equirectangularToCubemapShader);
+
+
+
+    // render BRDF map to screen
+    //brdfShader.Use();
+    //renderQuad();
+}
+
+
+
+void scene::SpecularIBL::OnImGuiRender()
+{
+    static bool showMaps = false;
+    static bool checked = false;
+    ImGui::Checkbox("Textured", &checked);
+
+    textured = checked;
+    static std::function<void()> storedFunction; 
+
+    ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
+    ImGui::ColorEdit3("Albedo color", &albedoColor[0]);
+    ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+    ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f);
+    ImGui::SliderFloat("Ao", &ao, 0.0f, 1.0f);
+
+    if (showMaps && storedFunction) {
+        ImGui::Begin("Textures", &showMaps, ImGuiWindowFlags_MenuBar);
+        storedFunction();
+        ImGui::End();
+    }
+
+    ImGui::Text("Albedo texture");
+    ImGui::PushID("Albedo texture");
+    if (ImGui::ImageButton(albedoTexture->getPath().c_str(), (void*)albedoTexture->GetId(), ImVec2(50, 50))) {
+        showMaps = true;
+        storedFunction = [&]() { MapBrowser(albedoTexture); };
+    }
+    ImGui::PopID();
+
+    ImGui::Text("Roughness texture");
+    ImGui::PushID("Roughness texture");
+    if (ImGui::ImageButton(roughnessTexture->getPath().c_str(), (void*)roughnessTexture->GetId(), ImVec2(50, 50))) {
+        showMaps = true;
+        storedFunction = [&]() { MapBrowser(roughnessTexture); };
+    }
+    ImGui::PopID();
+
+    ImGui::Text("Normal texture");
+    ImGui::PushID("Normal texture");
+    if (ImGui::ImageButton(normalTexture->getPath().c_str(), (void*)normalTexture->GetId(), ImVec2(50, 50))) {
+        showMaps = true;
+        storedFunction = [&]() { MapBrowser(normalTexture); };
+    }
+    ImGui::PopID();
+
+    ImGui::Text("Ao texture");
+    ImGui::PushID("Ao texture");
+    if (ImGui::ImageButton(aoTexture->getPath().c_str(), (void*)aoTexture->GetId(), ImVec2(50, 50))) {
+        showMaps = true;
+        storedFunction = [&]() { MapBrowser(aoTexture); };
+    }
+    ImGui::PopID();
+
+    for (int i = 0; i < textures.size(); i++)
+    {
+        if (i % 3 == 0)
+        {
+            ImGui::NewLine();
+        }
+        else
+        {
+            ImGui::SameLine();
+        }
+        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
+        {
+            hdr = std::make_shared<Texture>(textures[i]->getPath());
+            BakeMaps();
+        }
+    }
+}
+
+void scene::SpecularIBL::MapBrowser(std::shared_ptr<Texture>& texture)
+{
+    for (int i = 0; i < mapTextures.size(); i++)
+    {
+        if (i % 3 == 0)
+        {
+            ImGui::NewLine();
+        }
+        else
+        {
+            ImGui::SameLine();
+        }
+        if (ImGui::ImageButton(mapTextures[i]->getPath().c_str(), (void*)mapTextures[i]->GetId(), ImVec2(50, 50)))
+        {
+            texture = std::make_shared<Texture>(mapTextures[i]->getPath());
+        }
+    }  
+}
+
+
+void scene::SpecularIBL::InvokeMapBrowser(std::shared_ptr<Texture>& texture)
+{
+   
+}
+
+void scene::SpecularIBL::OnEvent(int event)
+{
+	cameraController.processInput(event);
+}
+
+void scene::SpecularIBL::BakeMaps()
+{
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
@@ -223,10 +472,6 @@ scene::SpecularIBL::SpecularIBL()
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
-    // pbr: load the HDR environment map
-    // ---------------------------------
-    hdr = std::make_shared<Texture>(GetResourcePath("res\\textures\\photo_studio_loft_hall_4k.hdr"));
 
     // pbr: setup cubemap to render to and attach to framebuffer
     // ---------------------------------------------------------
@@ -394,179 +639,4 @@ scene::SpecularIBL::SpecularIBL()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glViewport(0, 0, WIDTH, HEIGHT);
-
-    cubeVAO->Unbind();
-    cubeIBO->Unbind();
-    cubeVBO->Unbind();
-    sphereVAO->Unbind();
-    sphereIBO->Unbind();
-    sphereVBO->Unbind();
-    quadVAO->Unbind();
-    quadVBO->Unbind();
-    quadIBO->Unbind();
-    pbrShader->Unbind();
-    shaderTextured->Unbind();
-    equirectangularToCubemapShader->Unbind();
-    backgroundShader->Unbind();
-    irradianceShader->Unbind();
-    prefilterShader->Unbind();
-    brdfShader->Unbind();
-    hdr->Unbind();
-}
-
-scene::SpecularIBL::~SpecularIBL()
-{
-    cubeVAO->Unbind();
-    cubeIBO->Unbind();
-    cubeVBO->Unbind();
-    sphereVAO->Unbind();
-    sphereIBO->Unbind();
-    sphereVBO->Unbind();
-    quadVAO->Unbind();
-    quadVBO->Unbind();
-    quadIBO->Unbind();
-    pbrShader->Unbind();
-    shaderTextured->Unbind();
-    equirectangularToCubemapShader->Unbind();
-    backgroundShader->Unbind();
-    irradianceShader->Unbind();
-    prefilterShader->Unbind();
-    brdfShader->Unbind();
-    hdr->Unbind();
-}
-
-void scene::SpecularIBL::OnUpdate(float deltaTime)
-{
-	cameraController.OnUpdate(deltaTime);
-}
-
-void scene::SpecularIBL::OnMouseMovedEvent(double posX, double posY)
-{
-	cameraController.rotateCamera(posX, posY);
-}
-
-void scene::SpecularIBL::OnMouseScrolledEvent(double offsetX, double offsetY)
-{
-}
-
-void scene::SpecularIBL::OnRender()
-{
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    renderer.Submit(cameraController.getCamera());
-
-    cameraController.getCamera().Sensitivity = 0.005f;
-
-    // render scene, supplying the convoluted irradiance map to the final shader.
-    // ------------------------------------------------------------------------------------------
-    pbrShader->Bind();
-    renderer.Submit(cameraController.getCamera());
-    glm::mat4 view = cameraController.getViewMatrix();
-    pbrShader->SetUniformMat4f("view", view);
-    pbrShader->SetUniform3f("camPos", cameraController.getCameraPos());
-
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    pbrShader->SetUniformMat4f("projection", projection);
-
-
-
-    // bind pre-computed IBL data
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
-
-    // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
-    glm::mat4 model = glm::mat4(1.0f);
-    for (int row = 0; row < nrRows; ++row)
-    {
-        pbrShader->Bind();
-        pbrShader->SetUniform1f("metallic", (float)row / (float)nrRows);
-        for (int col = 0; col < nrColumns; ++col)
-        {
-            pbrShader->Bind();
-            // we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
-            // on direct lighting.
-            pbrShader->SetUniform1f("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(
-                (float)(col - (nrColumns / 2)) * spacing,
-                (float)(row - (nrRows / 2)) * spacing,
-                -2.0f
-            ));
-            pbrShader->SetUniformMat4f("model", model);
-            pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-            sphereVAO->Bind();
-            glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-        }
-    }
-
-    // render light source (simply re-render sphere at light positions)
-    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
-    // keeps the codeprint small.
-    for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
-    {
-        pbrShader->Bind();
-        glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-        newPos = lightPositions[i];
-        pbrShader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
-        pbrShader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
-
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, newPos);
-        model = glm::scale(model, glm::vec3(0.5f));
-        pbrShader->SetUniformMat4f("model", model);
-        pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-        sphereVAO->Bind();
-        glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-    }
-
-    equirectangularToCubemapShader->Bind();
-    view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
-    equirectangularToCubemapShader->SetUniformMat4f("view", view);
-    equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f - transparency);
-    hdr->Bind();
-    renderer.Draw(*cubeVAO, *cubeIBO, *equirectangularToCubemapShader);
-
-
-
-    // render BRDF map to screen
-    //brdfShader.Use();
-    //renderQuad();
-}
-
-void scene::SpecularIBL::OnImGuiRender()
-{
-    static bool checked = false;
-    ImGui::Checkbox("Textured", &checked);
-
-    textured = checked;
-
-    ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
-
-    for (int i = 0; i < textures.size(); i++)
-    {
-        if (i % 3 == 0)
-        {
-            ImGui::NewLine();
-        }
-        else
-        {
-            ImGui::SameLine();
-        }
-        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
-        {
-            hdr = std::make_shared<Texture>(textures[i]->getPath());
-           // bakeIrradiance();
-        }
-    }
-}
-
-void scene::SpecularIBL::OnEvent(int event)
-{
-	cameraController.processInput(event);
 }

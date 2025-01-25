@@ -22,11 +22,11 @@ namespace scene
 			irradianceShader,
 			prefilterShader,
 			brdfShader;
-		std::shared_ptr<Texture> albedo, normal, metallic, roughness, ao, hdr;
-		std::vector<std::unique_ptr<Texture>> textures;
+		std::shared_ptr<Texture> albedoTexture, normalTexture, metallicTexture, roughnessTexture, aoTexture, hdr;
+		std::vector<std::shared_ptr<Texture>> textures;
+		std::vector<std::shared_ptr<Texture>> mapTextures;
 
-		glm::vec3 lightPos = glm::vec3(2.0, 4.0, -2.0);
-		glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
+		glm::vec3 albedoColor;
 
 		CameraController cameraController;
 		Renderer renderer;
@@ -35,9 +35,6 @@ namespace scene
 		std::vector<glm::vec3> lightPositions;
 		std::vector<glm::vec3> lightColors;
 
-		int nrRows = 7;
-		int nrColumns = 7;
-		float spacing = 2.5;
 
 		unsigned int indexCount;
 		bool textured = false;
@@ -50,6 +47,9 @@ namespace scene
 		unsigned int brdfLUTTexture;
 
 		float transparency = 0.0f;
+		float roughness = 0.5f;
+		float metallic = 0.0f;
+		float ao = 1.0f;
 
 		void OnUpdate(float deltaTime) override;
 		void OnMouseMovedEvent(double posX, double posY) override;
@@ -57,5 +57,9 @@ namespace scene
 		void OnRender() override;
 		void OnImGuiRender() override;
 		void OnEvent(int event) override;
+		
+		void BakeMaps();
+		void MapBrowser(std::shared_ptr<Texture>& texture);
+		void InvokeMapBrowser(std::shared_ptr<Texture>& texture);
 	};
 }

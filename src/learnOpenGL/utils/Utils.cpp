@@ -114,9 +114,9 @@ std::vector<std::string> getObjectsPath()
     return objects;
 }
 
-std::vector<std::unique_ptr<Texture>> getTextures(const std::vector<std::string>& extensions)
+std::vector<std::shared_ptr<Texture>> getTextures(const std::vector<std::string>& extensions)
 {
-    std::vector<std::unique_ptr<Texture>> textures;
+    std::vector<std::shared_ptr<Texture>> textures;
     for (auto& path : getTexturesPath(extensions))
     {
         textures.push_back(std::make_unique<Texture>(path, TextureType::Standard));

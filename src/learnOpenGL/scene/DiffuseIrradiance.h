@@ -16,7 +16,7 @@ namespace scene
 		std::shared_ptr<VertexBuffer> sphereVBO, cubeVBO;
 		std::shared_ptr<Shader> shader, shaderTextured, equirectangularToCubemapShader, backgroundShader, irradianceShader;
 		std::shared_ptr<Texture> albedo, normal, metallic, roughness, ao, hdr;
-		std::vector<std::unique_ptr<Texture>> textures;
+		std::vector<std::shared_ptr<Texture>> textures;
 
 		glm::vec3 lightPos = glm::vec3(2.0, 4.0, -2.0);
 		glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
@@ -49,6 +49,6 @@ namespace scene
 		void OnImGuiRender() override;
 		void OnEvent(int event) override;
 
-		void bakeIrradiance();
+		void BakeIrradiance();
 	};
 }

@@ -162,9 +162,7 @@ scene::DiffuseIrradiance::DiffuseIrradiance()
     ao = std::make_shared<Texture>(GetResourcePath("res\\textures\\pbr\\rusted_iron\\ao.jpg"));
     hdr = std::make_shared<Texture>(GetResourcePath("res\\textures\\photo_studio_loft_hall_4k.hdr"));
 
-    
-
-    bakeIrradiance();
+    BakeIrradiance();
 
     shader->Bind();
     shader->SetUniform1i("irradianceMap", 0);
@@ -398,7 +396,7 @@ void scene::DiffuseIrradiance::OnImGuiRender()
         if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
         {
            hdr = std::make_shared<Texture>(textures[i]->getPath());
-           bakeIrradiance();
+           BakeIrradiance();
         }
     }
 }
@@ -408,7 +406,7 @@ void scene::DiffuseIrradiance::OnEvent(int event)
     cameraController.processInput(event);
 }
 
-void scene::DiffuseIrradiance::bakeIrradiance()
+void scene::DiffuseIrradiance::BakeIrradiance()
 {
     // configure global opengl state
     // -----------------------------
