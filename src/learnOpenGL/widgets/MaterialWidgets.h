@@ -23,24 +23,24 @@ static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, 
         {
             ImGui::SameLine();
         }
-        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
+        if (ImGui::ImageButton(textures[i]->GetPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
         {
             switch (TextureType)
             {
             case Diffuse:
-                material.setDiffuseMap(textures[i]->getPath());
+                material.SetDiffuseMap(textures[i]->GetPath());
 
-                std::cout << "Diffuse map " << textures[i]->getPath() << " set" << "\n";
+                std::cout << "Diffuse map " << textures[i]->GetPath() << " set" << "\n";
                 break;
             case Specular:
-                material.setSpecularMap(textures[i]->getPath());
+                material.SetSpecularMap(textures[i]->GetPath());
 
-                std::cout << "Specular map " << textures[i]->getPath() << " set" << "\n";
+                std::cout << "Specular map " << textures[i]->GetPath() << " set" << "\n";
                 break;
             case Emission:
-                material.setEmissionMap(textures[i]->getPath());
+                material.SetEmissionMap(textures[i]->GetPath());
 
-                std::cout << "Emission map " << textures[i]->getPath() << " set" << "\n";
+                std::cout << "Emission map " << textures[i]->GetPath() << " set" << "\n";
                 break;
             default:
                 break;
@@ -60,7 +60,7 @@ static void diffuseUi(Material& material, bool& showMaterialBrowser, TextureType
     ImGui::SameLine();
     if (ImGui::Button("Reset diffuse map"))
     {
-        material.setDiffuseMap(GetResourcePath("white.jpg"));
+        material.SetDiffuseMap(GetResourcePath("white.jpg"));
     }
     ImGui::ColorEdit3("Diffuse color", &material.diffuseColor[0]);
 }
@@ -76,7 +76,7 @@ static void specularUi(Material& material, bool& showMaterialBrowser, TextureTyp
     ImGui::SameLine();
     if (ImGui::Button("Reset specular map"))
     {
-        material.setSpecularMap(GetResourcePath("white.jpg"));
+        material.SetSpecularMap(GetResourcePath("white.jpg"));
     }
     ImGui::ColorEdit3("Specular color", &material.specularColor[0]);
     ImGui::SliderFloat("Shininess", &material.shininess, 1.f, 256.f);
@@ -93,7 +93,7 @@ static void emissionUi(Material& material, bool& showMaterialBrowser, TextureTyp
     ImGui::SameLine();
     if (ImGui::Button("Reset emission map"))
     {
-        material.setEmissionMap(GetResourcePath("white.jpg"));
+        material.SetEmissionMap(GetResourcePath("white.jpg"));
     }
     ImGui::SliderFloat("Emission", &material.emissionWeight, 0.f, 1.f);
 }

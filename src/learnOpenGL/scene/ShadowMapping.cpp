@@ -181,17 +181,17 @@ void scene::ShadowMapping::OnUpdate(float deltaTime)
 
 void scene::ShadowMapping::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::ShadowMapping::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::ShadowMapping::OnRender()
 {
-    cameraController.setCameraSensitvity(0.005);
+    cameraController.SetCameraSensitvity(0.005);
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -233,12 +233,12 @@ void scene::ShadowMapping::OnRender()
     }
     else {
         shader->Bind();
-        glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = cameraController.getViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = cameraController.GetViewMatrix();
         shader->SetUniformMat4f("projection", projection);
         shader->SetUniformMat4f("view", view);
         // set light uniforms
-        shader->SetUniform3f("viewPos", cameraController.getCameraPos());
+        shader->SetUniform3f("viewPos", cameraController.GetCameraPos());
         shader->SetUniform3f("lightPos", lightPos);
         shader->SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
         texture->Bind();
@@ -256,13 +256,13 @@ void scene::ShadowMapping::OnImGuiRender()
 
 void scene::ShadowMapping::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::ShadowMapping::RenderScene(std::shared_ptr<Shader> shader)
 {
 
-    cameraController.setCameraSpeed(1);
+    cameraController.SetCameraSpeed(1);
     // draw objects
     shader->Bind();
 

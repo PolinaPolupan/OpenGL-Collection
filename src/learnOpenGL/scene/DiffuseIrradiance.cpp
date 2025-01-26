@@ -237,7 +237,7 @@ void scene::DiffuseIrradiance::OnUpdate(float deltaTime)
 
 void scene::DiffuseIrradiance::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::DiffuseIrradiance::OnMouseScrolledEvent(double offsetX, double offsetY)
@@ -249,23 +249,23 @@ void scene::DiffuseIrradiance::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
-    cameraController.getCamera().Sensitivity = 0.005f;
-    cameraController.getCamera().CameraSpeed = 5;
+    cameraController.GetCamera().Sensitivity = 0.005f;
+    cameraController.GetCamera().CameraSpeed = 5;
 
     shader->Bind();
-    glm::mat4 view = cameraController.getViewMatrix();
-    renderer.Submit(cameraController.getCamera());
+    glm::mat4 view = cameraController.GetViewMatrix();
+    renderer.Submit(cameraController.GetCamera());
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
     shader->SetUniformMat4f("projection", projection);
     shader->SetUniformMat4f("view", view);
-    shader->SetUniform3f("camPos", cameraController.getCameraPos());
+    shader->SetUniform3f("camPos", cameraController.GetCameraPos());
 
     shaderTextured->Bind();
     shaderTextured->SetUniformMat4f("projection", projection);
     shaderTextured->SetUniformMat4f("view", view);
-    shaderTextured->SetUniform3f("camPos", cameraController.getCameraPos());
+    shaderTextured->SetUniform3f("camPos", cameraController.GetCameraPos());
 
     // bind pre-computed IBL data
     glActiveTexture(GL_TEXTURE0);
@@ -367,7 +367,7 @@ void scene::DiffuseIrradiance::OnRender()
     }
 
     equirectangularToCubemapShader->Bind();
-    view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
+    view = glm::mat4(glm::mat3(cameraController.GetViewMatrix())); // remove translation from the view matrix
     equirectangularToCubemapShader->SetUniformMat4f("view", view);
     equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f - transparency);
     hdr->Bind();
@@ -393,9 +393,9 @@ void scene::DiffuseIrradiance::OnImGuiRender()
         {
             ImGui::SameLine();
         }
-        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
+        if (ImGui::ImageButton(textures[i]->GetPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
         {
-           hdr = std::make_shared<Texture>(textures[i]->getPath());
+           hdr = std::make_shared<Texture>(textures[i]->GetPath());
            BakeIrradiance();
         }
     }
@@ -403,7 +403,7 @@ void scene::DiffuseIrradiance::OnImGuiRender()
 
 void scene::DiffuseIrradiance::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::DiffuseIrradiance::BakeIrradiance()

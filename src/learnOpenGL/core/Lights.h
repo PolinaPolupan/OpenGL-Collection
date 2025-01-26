@@ -16,78 +16,76 @@ enum LightType
     Default
 };
 
-class Light : public Node
+class Light: public Node
 {
 public:
-
-    Light(unsigned int id, LightType type) 
-        : Node(id), m_Type(type)
+    Light(unsigned int id, LightType type): 
+        Node(id), 
+        m_Type(type),
+        isEnabled(true),
+        color(glm::vec3(1.f, 1.f, 1.f)),
+        position(glm::vec3(0.f)),
+        direction(glm::vec3(0.f)),
+        intensity(1.0f),
+        cutOff(12.5f),
+        outerCutOff(17.5f),
+        constant(1.0f),
+        linear(0.09f),
+        quadratic(0.032f)
     {
-        m_cashedIntensity = intensity;
+        m_CashedIntensity = intensity;
         m_Shader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Light.shader"));
         m_Model = std::make_shared<Model>();
         m_Model->LoadModel(GetResourcePath("res\\objects\\light\\sphere.obj"));
         m_Model->scale = glm::vec3(0.1f);
     }
  
-    bool isEnabled = true;
-    glm::vec3 color = glm::vec3(1.f, 1.f, 1.f);
-    glm::vec3 position = glm::vec3(0.f);
-
-    float intensity = 1.f; // can't make it private, because it's used in ImGui
-
-    glm::vec3 direction = glm::vec3(0.f);
-    float cutOff = 12.5f;
-    float outerCutOff = 17.5f;
-
-    float constant = 1.f;
-    float linear = 0.09f;
-    float quadratic = 0.032f;
-
-    void triggerEnable()
-    {
-        if (!isEnabled)
-        {
-            disable();
-        }
-        else
-        {
-            enable();
-        }
+    void TriggerEnable() {
+        if (!isEnabled) Disable();
+        else Enable();
     }
 
-    float getIntensity() const 
-    {
-        if (isEnabled)
-            return intensity;
-        else
-            return 0.f;
+    float GetIntensity() const {
+        if (isEnabled) return intensity;
+        return 0.f;
     }
 
-    inline void changeType(LightType type) { m_Type = type; }
+    inline void ChangeType(LightType type) { m_Type = type; }
 
-    std::shared_ptr<Shader>& getShader() { return m_Shader; }
-    Model& getModel() { return *m_Model; }
-    inline LightType getType() const { return m_Type; }
+    std::shared_ptr<Shader>& GetShader() { return m_Shader; }
+
+    Model& GetModel() { return *m_Model; }
+
+    inline LightType GetType() const { return m_Type; }
+
+public:
+    bool isEnabled;
+    glm::vec3 color;
+    glm::vec3 position;
+    float intensity = 1.f;
+    glm::vec3 direction;
+    float cutOff;
+    float outerCutOff;
+    float constant;
+    float linear;
+    float quadratic;
+
+private:
+    void Enable() {
+        m_Model->isHidden = false;
+        intensity = m_CashedIntensity;
+    }
+    void Disable() {
+        m_Model->isHidden = true;
+        m_CashedIntensity = intensity;
+        intensity = 0.f;
+    }
 
 private:
     std::shared_ptr<Shader> m_Shader;
     LightType m_Type = LightType::Default;
     std::shared_ptr<Model> m_Model;
-    
-    float m_cashedIntensity;
-
-    void enable()
-    {
-        m_Model->isHidden = false;
-        intensity = m_cashedIntensity;
-    }
-    void disable()
-    {
-        m_Model->isHidden = true;
-        m_cashedIntensity = intensity;
-        intensity = 0.f;
-    }
+    float m_CashedIntensity;
 };
 
 class LightManager
@@ -95,26 +93,20 @@ class LightManager
 public:
     LightManager() {};
     ~LightManager();
-    int light_nId = 0;
+   
+    void AddLight(LightType tag);
 
-    void addLight(LightType tag);
+    void Update();
 
-    void update();
+    void Clear();
 
-    void clear();
+    std::vector<std::shared_ptr<Light>>& GetLightsByType(LightType type) { return m_LightsMap[type]; }
 
-    std::vector<std::shared_ptr<Light>>& getLightsByType(LightType type)
-    {
-        return m_lightsMap[type];
-    }
-
-    std::vector <std::shared_ptr<Light>>& getLights()
-    {
-        return m_lights;
-    }
+    std::vector <std::shared_ptr<Light>>& GetLights() { return m_Lights; }
 
 private:
-    std::vector <std::shared_ptr<Light>> m_lights;
-    std::map<LightType, std::vector <std::shared_ptr<Light>>> m_lightsMap;
-    std::vector<std::shared_ptr<Light>> m_lightsToAdd;
+    int m_Light_nId = 0;
+    std::vector <std::shared_ptr<Light>> m_Lights;
+    std::map<LightType, std::vector <std::shared_ptr<Light>>> m_LightsMap;
+    std::vector<std::shared_ptr<Light>> m_LightsToAdd;
 };

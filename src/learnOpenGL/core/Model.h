@@ -19,20 +19,21 @@ public:
     Model(const std::filesystem::path& path);
     Model();
 
-    std::string name;
-    bool isSelected = false;
-    bool isHidden = false;
-    glm::vec3 position = glm::vec3(0.f);
-    glm::vec3 scale = glm::vec3(1.f);
     void LoadModel(const std::filesystem::path& path);
-    void LoadModel(std::string path);
+    void LoadModel(const std::string& path);
     void LoadModel();
-    std::vector<Mesh>& getMeshes() { return m_Meshes; }
-    std::unordered_map<std::string, std::shared_ptr<Texture>>& getTexturesLoaded() { return m_TexturesLoaded; }
 
-    Mesh& operator [] (unsigned int index) {
-        return m_Meshes[index];
-    }
+    std::vector<Mesh>& GetMeshes() { return m_Meshes; }
+    std::unordered_map<std::string, std::shared_ptr<Texture>>& GetTexturesLoaded() { return m_TexturesLoaded; }
+
+    Mesh& operator[] (unsigned int index) { return m_Meshes[index]; }
+
+public:
+    std::string name;
+    bool isSelected;
+    bool isHidden;
+    glm::vec3 position;
+    glm::vec3 scale;
 
 private:
     Assimp::Importer m_Importer;

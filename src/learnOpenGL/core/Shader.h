@@ -18,10 +18,12 @@ private:
 	std::string m_FilePath;
 	unsigned int m_RendererId;
 	std::unordered_map<std::string, int> m_UniformLocationCache;
+
 public:
 	Shader(const std::string& path);
 	Shader(std::filesystem::path& path);
 	~Shader();
+
 	void Bind() const;
 	void Unbind() const;
 

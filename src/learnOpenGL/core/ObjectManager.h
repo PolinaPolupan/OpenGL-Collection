@@ -7,26 +7,24 @@
 class ObjectManager
 {
 public:
-    ObjectManager() {};
+    ObjectManager(): object_nId(0), current_selected_object(0) {}
     ~ObjectManager();
-    int object_nId = 0;
-    unsigned int current_selected_object = 0;
 
-    void addObject(std::string& path);
+    int object_nId;
+    unsigned int current_selected_object;
 
-    void deleteObject(const int& n);
+    void AddObject(const std::string& path);
 
-    void update();
+    void DeleteObject(const int& n);
 
-    void clear();
+    void Update();
 
-    std::vector <std::shared_ptr<Model>>& getObjects()
-    {
-        return m_objects;
-    }
+    void Clear();
+
+    std::vector <std::shared_ptr<Model>>& GetObjects() { return m_Objects; }
 
 private:
-    std::vector <std::shared_ptr<Model>> m_objects;
-    std::vector<std::shared_ptr<Model>> m_objectsToAdd;
-    std::vector<int> m_objectsToDelete;
+    std::vector <std::shared_ptr<Model>> m_Objects;
+    std::vector<std::shared_ptr<Model>> m_ObjectsToAdd;
+    std::vector<int> m_ObjectsToDelete;
 };

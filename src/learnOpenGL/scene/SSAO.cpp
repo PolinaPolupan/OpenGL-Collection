@@ -205,7 +205,7 @@ scene::SSAO::SSAO()
     shaderLightingPass->Unbind();
     shaderSSAOBlur->Unbind();
     shaderSSAOFlat->Unbind();
-    objectManager.clear();
+    objectManager.Clear();
 }
 
 scene::SSAO::~SSAO()
@@ -221,23 +221,23 @@ scene::SSAO::~SSAO()
     shaderLightingPass->Unbind();
     shaderSSAOBlur->Unbind();
     shaderSSAOFlat->Unbind();
-    objectManager.clear();
+    objectManager.Clear();
 }
 
 void scene::SSAO::OnUpdate(float deltaTime)
 {
 	cameraController.OnUpdate(deltaTime);
-	objectManager.update();
+	objectManager.Update();
 }
 
 void scene::SSAO::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::SSAO::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-	cameraController.zoomCamera(offsetX, offsetY);
+	cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::SSAO::OnRender()
@@ -246,15 +246,15 @@ void scene::SSAO::OnRender()
         // ------
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    cameraController.getCamera().Sensitivity = 0.005f;
+    cameraController.GetCamera().Sensitivity = 0.005f;
 
     // 1. geometry pass: render scene's geometry/color data into gbuffer
     // -----------------------------------------------------------------
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 view = cameraController.GetViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
     shaderGeometryPass->Bind();
     shaderGeometryPass->SetUniformMat4f("projection", projection);
@@ -274,7 +274,7 @@ void scene::SSAO::OnRender()
     model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
     model = glm::scale(model, glm::vec3(1.0f));
     shaderGeometryPass->SetUniformMat4f("model", model);
-    for (auto& o : objectManager.getObjects())
+    for (auto& o : objectManager.GetObjects())
     {
         shaderGeometryPass->Bind();
         renderer.RenderObject(*o, *shaderGeometryPass);
@@ -324,7 +324,7 @@ void scene::SSAO::OnRender()
     // -----------------------------------------------------------------------------------------------------
         shaderLightingPass->Bind();
         // send light relevant uniforms
-        glm::vec3 lightPosView = glm::vec3(cameraController.getViewMatrix() * glm::vec4(lightPos, 1.0));
+        glm::vec3 lightPosView = glm::vec3(cameraController.GetViewMatrix() * glm::vec4(lightPos, 1.0));
         shaderLightingPass->SetUniform3f("light.Position", lightPosView);
         shaderLightingPass->SetUniform3f("light.Color", lightColor);
         // Update attenuation parameters
@@ -372,7 +372,7 @@ void scene::SSAO::OnImGuiRender()
 
 void scene::SSAO::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }
 
 void scene::SSAO::generateSamples()

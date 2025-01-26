@@ -181,12 +181,12 @@ void scene::PointShadows::OnUpdate(float deltaTime)
 
 void scene::PointShadows::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::PointShadows::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::PointShadows::OnRender()
@@ -230,13 +230,13 @@ void scene::PointShadows::OnRender()
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader->Bind();
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     shader->SetUniformMat4f("projection", projection);
     shader->SetUniformMat4f("view", view);
     // set lighting uniforms
     shader->SetUniform3f("lightPos", lightPos);
-    shader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    shader->SetUniform3f("viewPos", cameraController.GetCameraPos());
     shader->SetUniform1i("shadows", shadows); // enable/disable shadows by pressing 'SPACE'
     shader->SetUniform1f("far_plane", far_plane);
     texture->Bind();
@@ -251,12 +251,12 @@ void scene::PointShadows::OnImGuiRender()
 
 void scene::PointShadows::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::PointShadows::RenderScene(std::shared_ptr<Shader> shader)
 {
-    cameraController.setCameraSpeed(1);
+    cameraController.SetCameraSpeed(1);
     // draw objects
     shader->Bind();
 

@@ -155,18 +155,18 @@ void scene::Antialiasing::OnUpdate(float deltaTime)
 
 void scene::Antialiasing::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::Antialiasing::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-	cameraController.zoomCamera(offsetX, offsetY);
+	cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::Antialiasing::OnRender()
 {
-    cameraController.setCameraSpeed(1.f);
-    renderer.Submit(cameraController.getCamera());
+    cameraController.SetCameraSpeed(1.f);
+    renderer.Submit(cameraController.GetCamera());
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -180,9 +180,9 @@ void scene::Antialiasing::OnRender()
     // set transformation matrices		
     cubeVAO->Bind();
     shader->Bind();
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
     shader->SetUniformMat4f("projection", projection);
-    shader->SetUniformMat4f("view", cameraController.getViewMatrix());
+    shader->SetUniformMat4f("view", cameraController.GetViewMatrix());
     shader->SetUniformMat4f("model", glm::mat4(1.0f));
 
     renderer.Draw(*cubeVAO, *cubeIBO, *shader);
@@ -212,5 +212,5 @@ void scene::Antialiasing::OnImGuiRender()
 
 void scene::Antialiasing::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }

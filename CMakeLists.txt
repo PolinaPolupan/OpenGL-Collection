@@ -39,11 +39,12 @@ src/learnOpenGL/Renderer.cpp
 "src/learnOpenGL/core/Mesh.cpp"
 "src/learnOpenGL/core/Model.cpp"
 "src/learnOpenGL/core/ObjectManager.cpp"
-"src/learnOpenGL/core/Shader.cpp"
+src/learnOpenGL/core/Shader.cpp
 src/learnOpenGL/core/IndexBuffer.cpp
 src/learnOpenGL/core/Texture.cpp
 src/learnOpenGL/core/VertexArray.cpp
 src/learnOpenGL/core/VertexBuffer.cpp
+src/learnOpenGL/core/CameraController.cpp
 )
 
 set(IMGUI_SOURCE

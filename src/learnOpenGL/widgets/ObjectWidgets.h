@@ -26,11 +26,11 @@ static void ObjectsList(ObjectManager& objectManager)
         if (ImGui::BeginListBox("objects"))
         {
             std::vector<std::string> items;
-            for (auto& o : objectManager.getObjects())
+            for (auto& o : objectManager.GetObjects())
             {
                 items.push_back(o->name);
             }
-            for (int n = 0; n < objectManager.getObjects().size(); n++)
+            for (int n = 0; n < objectManager.GetObjects().size(); n++)
             {
                 const bool is_selected = (item_current_idx == n);
                 if (ImGui::Selectable((items[n] + std::to_string(n)).c_str(), is_selected))
@@ -42,17 +42,17 @@ static void ObjectsList(ObjectManager& objectManager)
                 if (is_selected)
                 {
                     ImGui::SetItemDefaultFocus();
-                    objectManager.getObjects()[objectManager.current_selected_object]->isSelected = false;
+                    objectManager.GetObjects()[objectManager.current_selected_object]->isSelected = false;
                     objectManager.current_selected_object = n;
-                    objectManager.getObjects()[objectManager.current_selected_object]->isSelected = true;
+                    objectManager.GetObjects()[objectManager.current_selected_object]->isSelected = true;
 
                     // Context menu
                     if (ImGui::BeginPopupContextWindow())
                     {
-                        ImGui::Text(objectManager.getObjects()[objectManager.current_selected_object]->name.c_str());
+                        ImGui::Text(objectManager.GetObjects()[objectManager.current_selected_object]->name.c_str());
                         ImGui::Separator();
                         if (ImGui::MenuItem("Delete", "Del")) {
-                            objectManager.deleteObject(n);
+                            objectManager.DeleteObject(n);
                         }
 
                         ImGui::EndPopup();
@@ -64,9 +64,9 @@ static void ObjectsList(ObjectManager& objectManager)
         }
         ImGui::TreePop();
     }
-    if (objectManager.getObjects().size())
+    if (objectManager.GetObjects().size())
     {
-        objectUi(*objectManager.getObjects()[objectManager.current_selected_object]);
+        objectUi(*objectManager.GetObjects()[objectManager.current_selected_object]);
     }
 }
 
@@ -87,7 +87,7 @@ static void LoadObjectsList(std::vector<std::string>& modelsPaths, ObjectManager
                 if (ImGui::Selectable(name.c_str(), is_selected))
                 {
                     item_current_idx = n;
-                    objectManager.addObject(modelsPaths[n]);
+                    objectManager.AddObject(modelsPaths[n]);
                 }
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected)

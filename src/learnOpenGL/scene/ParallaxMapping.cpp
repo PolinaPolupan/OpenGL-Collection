@@ -114,23 +114,23 @@ scene::ParallaxMapping::~ParallaxMapping()
     diffuseMap->Unbind();
     normalMap->Unbind();
     heightMap->Unbind();
-    objectManager.clear();
+    objectManager.Clear();
 }
 
 void scene::ParallaxMapping::OnUpdate(float deltaTime)
 {
     cameraController.OnUpdate(deltaTime);
-    objectManager.update();
+    objectManager.Update();
 }
 
 void scene::ParallaxMapping::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::ParallaxMapping::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::ParallaxMapping::OnRender()
@@ -138,18 +138,18 @@ void scene::ParallaxMapping::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
     // configure view/projection matrices
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     planeShader->Bind();
     planeShader->SetUniformMat4f("projection", projection);
     planeShader->SetUniformMat4f("view", view);
     //  // render normal-mapped quad
     glm::mat4 model = glm::mat4(1.0f);
     planeShader->SetUniformMat4f("model", model);
-    planeShader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    planeShader->SetUniform3f("viewPos", cameraController.GetCameraPos());
     planeShader->SetUniform3f("lightPos", lightPos);
     planeShader->SetUniform1f("heightScale", heightScale);
     
@@ -170,7 +170,7 @@ void scene::ParallaxMapping::OnImGuiRender()
 
 void scene::ParallaxMapping::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::ParallaxMapping::RenderPlane()

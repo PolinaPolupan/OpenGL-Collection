@@ -15,16 +15,8 @@ enum TextureType
 
 class Texture
 {
-private:
-
-	unsigned int m_RendererId;
-	std::string m_FilePath;
-	TextureType m_textureType;
-	unsigned char* m_LocalBuffer;
-	int m_Width, m_Height, m_BPP;
-public:
-	
-	Texture(const std::string& path, TextureType textureType=TextureType::Diffuse, bool gammaCorrection = false);
+public:	
+	Texture(const std::string& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);
 	Texture(const char* path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);  
 	Texture(const std::filesystem::path& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);
 	~Texture();
@@ -32,15 +24,15 @@ public:
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
 
-	inline void setId(unsigned int id) { m_RendererId = id; }
+	inline void SetId(unsigned int id) { m_RendererId = id; }
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
 	inline unsigned int GetId() const { return m_RendererId; }
-	inline std::string getPath() const { return m_FilePath; }
-	inline TextureType getType() const { return m_textureType; }
-	inline const char* getTextureTypeName()
+	inline std::string GetPath() const { return m_FilePath; }
+	inline TextureType GetType() const { return m_TextureType; }
+	inline const char* GetTextureTypeName()
 	{
-		switch (m_textureType)
+		switch (m_TextureType)
 		{
 		case TextureType::Diffuse:
 			return "diffuse";
@@ -58,6 +50,13 @@ public:
 	}
 
 private:
-	void init(const char* path, TextureType textureType, bool gammaCorrection);
-	void initHdr(const char* path, TextureType textureType, bool gammaCorrection);
+	void Init(const char* path, TextureType textureType, bool gammaCorrection);
+	void InitHdr(const char* path, TextureType textureType, bool gammaCorrection);
+
+private:
+	unsigned int m_RendererId;
+	std::string m_FilePath;
+	TextureType m_TextureType;
+	unsigned char* m_LocalBuffer;
+	int m_Width, m_Height, m_BPP;
 };

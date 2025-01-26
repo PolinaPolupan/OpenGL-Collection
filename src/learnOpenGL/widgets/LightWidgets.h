@@ -10,9 +10,9 @@ static void pointLightUi(Light& pointLight)
     if (ImGui::Checkbox("Enable", &pointLight.isEnabled))
     {
         if (pointLight.intensity == 0.f)
-            pointLight.triggerEnable();
+            pointLight.TriggerEnable();
     }
-    ImGui::SliderFloat3("Light Position", &pointLight.getModel().position[0], -20.f, 20.f);
+    ImGui::SliderFloat3("Light Position", &pointLight.GetModel().position[0], -20.f, 20.f);
     ImGui::SliderFloat("Intensity", &pointLight.intensity, 0.f, 100.f);
     ImGui::ColorEdit3("Light color", &pointLight.color[0]);
 }
@@ -22,7 +22,7 @@ static void directionalLightUi(Light& dirlight)
     if (ImGui::Checkbox("Enable", &dirlight.isEnabled))
     {
         if (dirlight.intensity == 0.f)
-            dirlight.triggerEnable();
+            dirlight.TriggerEnable();
     }
     ImGui::SliderFloat3("Light Direction", &dirlight.direction[0], -20.f, 20.f);
     ImGui::SliderFloat("Intensity", &dirlight.intensity, 0.f, 100.f);
@@ -34,10 +34,10 @@ static void spotLightUi(Light& spotlight)
     if (ImGui::Checkbox("Enable", &spotlight.isEnabled))
     {
         if (spotlight.intensity == 0.f)
-            spotlight.triggerEnable();
+            spotlight.TriggerEnable();
     }
     ImGui::SliderFloat3("Light Direction", &spotlight.direction[0], -20.f, 20.f);
-    ImGui::SliderFloat3("Light Position", &spotlight.getModel().position[0], -20.f, 20.f);
+    ImGui::SliderFloat3("Light Position", &spotlight.GetModel().position[0], -20.f, 20.f);
     ImGui::SliderFloat("Inner cut off", &spotlight.cutOff, 0.f, 90.f);
     ImGui::SliderFloat("Outer cut off", &spotlight.outerCutOff, 0.f, 90.f);
     ImGui::SliderFloat("Intensity", &spotlight.intensity, 0.f, 100.f);
@@ -58,10 +58,10 @@ static void LightsTabBar(std::vector<std::shared_ptr<Light>>& lights)
                     ImGui::Text(("light_" + std::to_string(i)).c_str());
                     std::string items[] = { getLightTypeName(LightType::Spot), getLightTypeName(LightType::Point), getLightTypeName(LightType::Directional) };
                    
-                    static int item_current_idx = lights[i]->getType(); // Here we store our selection data as an index.
+                    static int item_current_idx = lights[i]->GetType(); // Here we store our selection data as an index.
 
                     // Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
-                    std::string combo_preview_value = items[lights[i]->getType()];
+                    std::string combo_preview_value = items[lights[i]->GetType()];
 
                     if (ImGui::BeginCombo("Type", combo_preview_value.c_str()))
                     {
@@ -71,7 +71,7 @@ static void LightsTabBar(std::vector<std::shared_ptr<Light>>& lights)
                             if (ImGui::Selectable(items[n].c_str(), is_selected))
                             {
                                 item_current_idx = n;
-                                lights[i]->changeType((LightType)item_current_idx);
+                                lights[i]->ChangeType((LightType)item_current_idx);
                             }
                             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                             if (is_selected)
@@ -117,7 +117,7 @@ static void AddLightsWidget(LightManager& lightManager)
                 {
                     item_current_idx = n;
                     LightType type = getLightTypeByName(items[n]);
-                    lightManager.addLight(type);
+                    lightManager.AddLight(type);
                 }
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

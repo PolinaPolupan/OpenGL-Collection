@@ -139,12 +139,12 @@ void scene::Blending::OnUpdate(float deltaTime)
 
 void scene::Blending::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::Blending::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-	cameraController.zoomCamera(offsetX, offsetY);
+	cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 std::vector<glm::vec3> vegetation
@@ -164,11 +164,11 @@ void scene::Blending::OnRender()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
     shader.Bind();
     glm::mat4 projection = glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 100.f);
-    shader.SetUniformMat4f("view", cameraController.getViewMatrix());
+    shader.SetUniformMat4f("view", cameraController.GetViewMatrix());
     shader.SetUniformMat4f("projection", projection);
 
     glm::mat4 model = glm::mat4(1.f);
@@ -209,5 +209,5 @@ void scene::Blending::OnImGuiRender()
 
 void scene::Blending::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }

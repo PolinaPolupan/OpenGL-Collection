@@ -3,18 +3,14 @@
 class Node
 {
 public:
-	Node(unsigned int id)
-		: m_id(id) {};
+	Node(unsigned int id): m_Id(id), m_IsActive(true) {}
 
-	void destroy()
-	{
-		m_isActive = false;
-	}
-	inline bool isActive() const { return m_isActive; }
+	void Destroy() { m_IsActive = false; }
+	inline bool IsActive() const { return m_IsActive; }
 
-	inline unsigned int id() const { return m_id; }
+	inline unsigned int Id() const { return m_Id; }
 
 protected:	
-	unsigned int m_id = 0;
-	bool m_isActive = true;
+	unsigned int m_Id;
+	bool m_IsActive;
 };

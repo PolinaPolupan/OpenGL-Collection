@@ -59,12 +59,12 @@ void scene::AdvancedLighting::OnUpdate(float deltaTime)
 
 void scene::AdvancedLighting::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::AdvancedLighting::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::AdvancedLighting::OnRender()
@@ -72,15 +72,15 @@ void scene::AdvancedLighting::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    cameraController.setCameraSpeed(1);
+    cameraController.SetCameraSpeed(1);
     // draw objects
     shader->Bind();
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     shader->SetUniformMat4f("projection", projection);
     shader->SetUniformMat4f("view", view);
     // set light uniforms
-    shader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    shader->SetUniform3f("viewPos", cameraController.GetCameraPos());
     shader->SetUniform3f("lightPos", lightPos);
 
     if (mode == Mode::BLIN_PHONG) {
@@ -109,5 +109,5 @@ void scene::AdvancedLighting::OnImGuiRender()
 
 void scene::AdvancedLighting::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

@@ -108,12 +108,12 @@ void scene::CoordinateSystem::OnUpdate(float deltaTime)
 
 void scene::CoordinateSystem::OnMouseMovedEvent(double posX, double posY)
 {
-    m_cameraController.rotateCamera(posX, posY);
+    m_cameraController.RotateCamera(posX, posY);
 }
 
 void scene::CoordinateSystem::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    m_cameraController.zoomCamera(offsetX, offsetY);
+    m_cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::CoordinateSystem::OnRender()
@@ -138,11 +138,11 @@ void scene::CoordinateSystem::OnRender()
 
     m_VAO->Bind();
     m_Shader->Bind();
-    m_cameraController.setCameraSpeed(m_CameraSpeed);
-    m_cameraController.setCameraFOV(m_FOV);
+    m_cameraController.SetCameraSpeed(m_CameraSpeed);
+    m_cameraController.SetCameraFOV(m_FOV);
    
-    glm::mat4 projection = glm::perspective(glm::radians(m_cameraController.getFOV()), 800.0f / 600.0f, m_NearClipRange, m_FarClipRange);
-    m_Shader->SetUniformMat4f("view", m_cameraController.getViewMatrix());
+    glm::mat4 projection = glm::perspective(glm::radians(m_cameraController.GetFOV()), 800.0f / 600.0f, m_NearClipRange, m_FarClipRange);
+    m_Shader->SetUniformMat4f("view", m_cameraController.GetViewMatrix());
     m_Shader->SetUniformMat4f("projection", projection);
 
     for (unsigned int i = 0; i < 10; i++) {
@@ -174,5 +174,5 @@ void scene::CoordinateSystem::OnImGuiRender()
 
 void scene::CoordinateSystem::OnEvent(int event)
 {
-    m_cameraController.processInput(event);
+    m_cameraController.ProcessInput(event);
 }

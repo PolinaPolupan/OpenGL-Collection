@@ -108,23 +108,23 @@ scene::NormalMapping::~NormalMapping()
     planeShader->Unbind();
     diffuseMap->Unbind();
     normalMap->Unbind();
-    objectManager.clear();
+    objectManager.Clear();
 }
 
 void scene::NormalMapping::OnUpdate(float deltaTime)
 {
     cameraController.OnUpdate(deltaTime);
-    objectManager.update();
+    objectManager.Update();
 }
 
 void scene::NormalMapping::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::NormalMapping::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::NormalMapping::OnRender()
@@ -132,11 +132,11 @@ void scene::NormalMapping::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
     // configure view/projection matrices
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     planeShader->Bind();
     planeShader->SetUniformMat4f("projection", projection);
     planeShader->SetUniformMat4f("view", view);
@@ -144,7 +144,7 @@ void scene::NormalMapping::OnRender()
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show normal mapping from multiple directions
     planeShader->SetUniformMat4f("model", model);
-    planeShader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    planeShader->SetUniform3f("viewPos", cameraController.GetCameraPos());
     planeShader->SetUniform3f("lightPos", lightPos);
   //  diffuseMap->Bind();
   //  normalMap->Bind(1);
@@ -158,7 +158,7 @@ void scene::NormalMapping::OnRender()
    // planeShader->SetUniformMat4f("model", model);
    // renderer.Draw(*planeVAO, *planeIBO, *planeShader);
 
-    for (auto& o : objectManager.getObjects())
+    for (auto& o : objectManager.GetObjects())
     {
         planeShader->Bind();
         renderer.RenderObject(*o, *planeShader);
@@ -174,7 +174,7 @@ void scene::NormalMapping::OnImGuiRender()
 
 void scene::NormalMapping::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::NormalMapping::RenderPlane()

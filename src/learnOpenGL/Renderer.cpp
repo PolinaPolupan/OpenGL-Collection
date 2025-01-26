@@ -42,11 +42,11 @@ void Renderer::Submit(Camera& camera)
 void Renderer::RenderLight(Light& light, Shader& shader)
 {
     
-    std::string name = "lights[" + std::to_string(light.id()) + "].";
+    std::string name = "lights[" + std::to_string(light.Id()) + "].";
 
     shader.Bind();
-    shader.SetUniform1i(name + "type", light.getType());
-    shader.SetUniform3f(name + "position", light.getModel().position);
+    shader.SetUniform1i(name + "type", light.GetType());
+    shader.SetUniform3f(name + "position", light.GetModel().position);
     shader.SetUniform3f(name + "direction", light.direction);
     shader.SetUniform3f(name + "color", light.color);
     shader.SetUniform1f(name + "cutOff", glm::cos(glm::radians(light.cutOff)));
@@ -54,35 +54,35 @@ void Renderer::RenderLight(Light& light, Shader& shader)
     shader.SetUniform1f(name + "constant", light.constant);
     shader.SetUniform1f(name + "linear", light.linear);
     shader.SetUniform1f(name + "quadratic", light.quadratic);
-    shader.SetUniform1f(name + "intensity", light.getIntensity());
+    shader.SetUniform1f(name + "intensity", light.GetIntensity());
 
-    light.getShader()->Bind();
+    light.GetShader()->Bind();
     // render the loaded model
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, light.getModel().position); // translate it down so it's at the center of the scene
+    model = glm::translate(model, light.GetModel().position); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down;
-    light.getShader()->SetUniformMat4f("model", model);
-    light.getShader()->SetUniformMat4f("projection", m_SceneData.projection);
-    light.getShader()->SetUniformMat4f("view", m_SceneData.view);
-    light.getShader()->SetUniform3f("lightColor", light.color);
-    light.getShader()->Unbind();
+    light.GetShader()->SetUniformMat4f("model", model);
+    light.GetShader()->SetUniformMat4f("projection", m_SceneData.projection);
+    light.GetShader()->SetUniformMat4f("view", m_SceneData.view);
+    light.GetShader()->SetUniform3f("lightColor", light.color);
+    light.GetShader()->Unbind();
     
-    if (!light.getModel().isHidden)
+    if (!light.GetModel().isHidden)
     {
-        RenderObject(light.getModel(), *light.getShader());
+        RenderObject(light.GetModel(), *light.GetShader());
     }
 }
 
 void Renderer::RenderObject(Model& model, Shader& shader) 
 {
     disableStencil();
-    for (unsigned int i = 0; i < model.getMeshes().size(); i++)
+    for (unsigned int i = 0; i < model.GetMeshes().size(); i++)
     {
             
         shader.Bind();
         shader.SetUniformMat4f("projection", m_SceneData.projection);
         shader.SetUniformMat4f("view", m_SceneData.view);
-        RenderMesh(model.getMeshes()[i], shader, model.position, model.scale);
+        RenderMesh(model.GetMeshes()[i], shader, model.position, model.scale);
         shader.Unbind();
     }
     /*if (model.isSelected) 
@@ -116,8 +116,8 @@ void Renderer::RenderMesh(Mesh& mesh, Shader& shader, glm::vec3 pos, glm::vec3 s
 	for (unsigned int i = 0; i < mesh.textures.size(); i++)
 	{
 
-		TextureType type = mesh.textures[i]->getType();
-		std::string name = mesh.textures[i]->getTextureTypeName();
+		TextureType type = mesh.textures[i]->GetType();
+		std::string name = mesh.textures[i]->GetTextureTypeName();
 
 		switch (type)
 		{
@@ -150,7 +150,7 @@ void Renderer::RenderMesh(Mesh& mesh, Shader& shader, glm::vec3 pos, glm::vec3 s
 	modelMat = glm::scale(modelMat, scale);	// it's a bit too big for our scene, so scale it down
 	shader.SetUniformMat4f("model", modelMat);
     
-	Draw(*mesh.getVAO(), *mesh.getIBO(), shader);
+	Draw(*mesh.GetVAO(), *mesh.GetIBO(), shader);
 }
 
 void Renderer::enableStencil()

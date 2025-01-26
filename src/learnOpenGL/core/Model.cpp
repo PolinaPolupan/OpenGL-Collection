@@ -21,26 +21,34 @@
 
 using namespace std;
 
-Model::Model(const char* path)
+Model::Model(const char* path):
+    isSelected(false),
+    isHidden(false),
+    position(glm::vec3(0.f)),
+    scale(glm::vec3(1.f))
 {
     name = std::filesystem::path(path).filename().string();
     m_Directory = std::filesystem::path(path).parent_path().string() + "\\";
 }
 
-Model::Model(const std::filesystem::path& path)
+Model::Model(const std::filesystem::path& path):
+    isSelected(false),
+    isHidden(false),
+    position(glm::vec3(0.f)),
+    scale(glm::vec3(1.f))
 {
     name = path.filename().string();
     m_Directory = std::filesystem::path(path).parent_path().string() + "\\";
 }
 
-Model::Model() {}
+Model::Model(): Model("") {}
 
 void Model::LoadModel(const std::filesystem::path& path)
 {
     LoadModel(path.string());
 }
 
-void Model::LoadModel(std::string path)
+void Model::LoadModel(const std::string& path)
 {
     name = std::filesystem::path(path).filename().string();
 
@@ -185,7 +193,7 @@ std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(aiMaterial* ma
         else
         {
             std::shared_ptr<Texture> texture = std::make_shared<Texture>(m_Directory + std::string(str.C_Str()), typeName);
-            std::cout << std::string(str.C_Str()) << " type: " << texture->getTextureTypeName() << "\n";
+            std::cout << std::string(str.C_Str()) << " type: " << texture->GetTextureTypeName() << "\n";
             textures.push_back(texture);
             m_TexturesLoaded[str.C_Str()]  = texture;
         }

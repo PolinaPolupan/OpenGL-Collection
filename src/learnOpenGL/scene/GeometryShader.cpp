@@ -33,23 +33,23 @@ scene::GeometryShader::~GeometryShader()
 	explodeShader->Unbind();
 	VAO->Unbind();
 	VBO->Unbind();
-	objectManager.clear();
+	objectManager.Clear();
 }
 
 void scene::GeometryShader::OnUpdate(float deltaTime)
 {
 	cameraController.OnUpdate(deltaTime);
-	objectManager.update();
+	objectManager.Update();
 }
 
 void scene::GeometryShader::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::GeometryShader::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-	cameraController.zoomCamera(offsetX, offsetY);
+	cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::GeometryShader::OnRender()
@@ -86,7 +86,7 @@ void scene::GeometryShader::OnImGuiRender()
 
 void scene::GeometryShader::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }
 
 void scene::GeometryShader::OnRenderHouses()
@@ -101,10 +101,10 @@ void scene::GeometryShader::OnRenderHouses()
 
 void scene::GeometryShader::OnRenderExplode()
 {
-	renderer.Submit(cameraController.getCamera());
+	renderer.Submit(cameraController.GetCamera());
 	// configure transformation matrices
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 1.0f, 100.0f);
-	glm::mat4 view = cameraController.getViewMatrix();
+	glm::mat4 view = cameraController.GetViewMatrix();
 	glm::mat4 model = glm::mat4(1.0f);
 	
 	explodeShader->Bind();
@@ -116,7 +116,7 @@ void scene::GeometryShader::OnRenderExplode()
 	explodeShader->SetUniform1f("time", static_cast<float>(glfwGetTime()));
 
 	// draw model
-	for (auto& o : objectManager.getObjects())
+	for (auto& o : objectManager.GetObjects())
 	{
 		explodeShader->Bind();
 		renderer.RenderObject(*o, *explodeShader);
@@ -127,10 +127,10 @@ void scene::GeometryShader::OnRenderExplode()
 
 void scene::GeometryShader::OnRenderNormals()
 {
-	renderer.Submit(cameraController.getCamera());
+	renderer.Submit(cameraController.GetCamera());
 	// configure transformation matrices
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 1.0f, 100.0f);
-	glm::mat4 view = cameraController.getViewMatrix();
+	glm::mat4 view = cameraController.GetViewMatrix();
 	glm::mat4 model = glm::mat4(1.0f);
 
 	defaultShader->Bind();
@@ -139,7 +139,7 @@ void scene::GeometryShader::OnRenderNormals()
 	defaultShader->SetUniformMat4f("model", model);
 
 	// draw model
-	for (auto& o : objectManager.getObjects())
+	for (auto& o : objectManager.GetObjects())
 	{
 		defaultShader->Bind();
 		renderer.RenderObject(*o, *defaultShader);
@@ -153,7 +153,7 @@ void scene::GeometryShader::OnRenderNormals()
 	normalShader->SetUniformMat4f("model", model);
 
 	// draw model
-	for (auto& o : objectManager.getObjects())
+	for (auto& o : objectManager.GetObjects())
 	{
 		normalShader->Bind();
 		renderer.RenderObject(*o, *normalShader);

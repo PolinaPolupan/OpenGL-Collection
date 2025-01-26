@@ -198,23 +198,23 @@ scene::DeferredShading::~DeferredShading()
     shaderLightBox->Unbind();
     shaderLightingPass->Unbind();
     shaderFlat->Unbind();
-    objectManager.clear();
+    objectManager.Clear();
 }
 
 void scene::DeferredShading::OnUpdate(float deltaTime)
 {
     cameraController.OnUpdate(deltaTime);
-    objectManager.update();
+    objectManager.Update();
 }
 
 void scene::DeferredShading::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::DeferredShading::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::DeferredShading::OnRender()
@@ -228,10 +228,10 @@ void scene::DeferredShading::OnRender()
     // -----------------------------------------------------------------
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    renderer.Submit(cameraController.getCamera());
-    cameraController.getCamera().Sensitivity = 0.005f;
+    renderer.Submit(cameraController.GetCamera());
+    cameraController.GetCamera().Sensitivity = 0.005f;
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 view = cameraController.GetViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
     shaderGeometryPass->Bind();
     shaderGeometryPass->SetUniformMat4f("projection", projection);
@@ -243,7 +243,7 @@ void scene::DeferredShading::OnRender()
         model = glm::translate(model, objectPositions[i]);
         model = glm::scale(model, glm::vec3(0.5f));
         shaderGeometryPass->SetUniformMat4f("model", model);
-        for (auto& o : objectManager.getObjects())
+        for (auto& o : objectManager.GetObjects())
         {
             shaderGeometryPass->Bind();
             o->position = objectPositions[i];
@@ -276,7 +276,7 @@ void scene::DeferredShading::OnRender()
             shaderLightingPass->SetUniform1f("lights[" + std::to_string(i) + "].Linear", linear);
             shaderLightingPass->SetUniform1f("lights[" + std::to_string(i) + "].Quadratic", quadratic);
         }
-        shaderLightingPass->SetUniform3f("viewPos", cameraController.getCameraPos());
+        shaderLightingPass->SetUniform3f("viewPos", cameraController.GetCameraPos());
         // finally render quad
         renderer.Draw(*quadVAO, *quadIBO, *shaderLightingPass);
 
@@ -352,5 +352,5 @@ void scene::DeferredShading::OnImGuiRender()
 
 void scene::DeferredShading::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

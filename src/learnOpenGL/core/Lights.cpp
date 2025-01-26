@@ -2,39 +2,39 @@
 
 LightManager::~LightManager()
 {
-    clear();
+    Clear();
 }
 
-void LightManager::addLight(LightType tag)
+void LightManager::AddLight(LightType tag)
 {
-    auto light = std::make_shared<Light>(light_nId, tag);
-    m_lightsToAdd.push_back(light); 
-    light_nId++;
+    auto light = std::make_shared<Light>(m_Light_nId, tag);
+    m_LightsToAdd.push_back(light); 
+    m_Light_nId++;
 }
 
-void LightManager::update()
+void LightManager::Update()
 {
-    for (auto& light : m_lightsToAdd)
+    for (auto& light : m_LightsToAdd)
     {
-        m_lightsMap[light->getType()].push_back(light);
-        m_lights.push_back(light);
+        m_LightsMap[light->GetType()].push_back(light);
+        m_Lights.push_back(light);
     }
-    for (auto& e : m_lightsMap)
+    for (auto& e : m_LightsMap)
     {
-        auto toRemove = std::remove_if(m_lightsMap[e.first].begin(), m_lightsMap[e.first].end(), [](std::shared_ptr<Light> node) { return node->isActive() == false; });
-        m_lightsMap[e.first].erase(toRemove, m_lightsMap[e.first].end());
+        auto toRemove = std::remove_if(m_LightsMap[e.first].begin(), m_LightsMap[e.first].end(), [](std::shared_ptr<Light> node) { return node->IsActive() == false; });
+        m_LightsMap[e.first].erase(toRemove, m_LightsMap[e.first].end());
     }
 
-    auto to_remove = std::remove_if(m_lights.begin(), m_lights.end(), [](std::shared_ptr<Light> l) {return l->isActive() == false; });
-    m_lights.erase(to_remove, m_lights.end());
+    auto to_remove = std::remove_if(m_Lights.begin(), m_Lights.end(), [](std::shared_ptr<Light> l) {return l->IsActive() == false; });
+    m_Lights.erase(to_remove, m_Lights.end());
 
-    m_lightsToAdd.clear();
+    m_LightsToAdd.clear();
 }
 
-void LightManager::clear()
+void LightManager::Clear()
 {
-    m_lightsToAdd.clear();
-    m_lights.clear();
-    light_nId = 0;
+    m_LightsToAdd.clear();
+    m_Lights.clear();
+    m_Light_nId = 0;
 }
 

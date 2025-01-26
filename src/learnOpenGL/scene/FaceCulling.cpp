@@ -111,12 +111,12 @@ void scene::FaceCulling::OnUpdate(float deltaTime)
 
 void scene::FaceCulling::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::FaceCulling::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::FaceCulling::OnRender()
@@ -124,11 +124,11 @@ void scene::FaceCulling::OnRender()
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
     shader.Bind();
     glm::mat4 projection = glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 100.f);
-    shader.SetUniformMat4f("view", cameraController.getViewMatrix());
+    shader.SetUniformMat4f("view", cameraController.GetViewMatrix());
     shader.SetUniformMat4f("projection", projection);
 
     glm::mat4 model = glm::mat4(1.f);
@@ -176,5 +176,5 @@ void scene::FaceCulling::OnImGuiRender()
 
 void scene::FaceCulling::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

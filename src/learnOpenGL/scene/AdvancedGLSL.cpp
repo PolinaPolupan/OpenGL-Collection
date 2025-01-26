@@ -116,12 +116,12 @@ void scene::AdvancedGLSL::OnUpdate(float deltaTime)
 
 void scene::AdvancedGLSL::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::AdvancedGLSL::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::AdvancedGLSL::OnRender()
@@ -132,7 +132,7 @@ void scene::AdvancedGLSL::OnRender()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set the view and projection matrix in the uniform block - we only have to do this once per loop iteration.
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 view = cameraController.GetViewMatrix();
     glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -171,5 +171,5 @@ void scene::AdvancedGLSL::OnImGuiRender()
 
 void scene::AdvancedGLSL::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

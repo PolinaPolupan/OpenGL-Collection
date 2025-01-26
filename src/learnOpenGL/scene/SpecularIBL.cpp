@@ -266,7 +266,7 @@ void scene::SpecularIBL::OnUpdate(float deltaTime)
 
 void scene::SpecularIBL::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::SpecularIBL::OnMouseScrolledEvent(double offsetX, double offsetY)
@@ -278,17 +278,17 @@ void scene::SpecularIBL::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
 
-    cameraController.getCamera().Sensitivity = 0.005f;
+    cameraController.GetCamera().Sensitivity = 0.005f;
 
     // render scene, supplying the convoluted irradiance map to the final shader.
     // ------------------------------------------------------------------------------------------
     pbrShader->Bind();
-    renderer.Submit(cameraController.getCamera());
-    glm::mat4 view = cameraController.getViewMatrix();
+    renderer.Submit(cameraController.GetCamera());
+    glm::mat4 view = cameraController.GetViewMatrix();
     pbrShader->SetUniformMat4f("view", view);
-    pbrShader->SetUniform3f("camPos", cameraController.getCameraPos());
+    pbrShader->SetUniform3f("camPos", cameraController.GetCameraPos());
 
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
     pbrShader->SetUniformMat4f("projection", projection);
@@ -337,7 +337,7 @@ void scene::SpecularIBL::OnRender()
     }
 
     equirectangularToCubemapShader->Bind();
-    view = glm::mat4(glm::mat3(cameraController.getViewMatrix())); // remove translation from the view matrix
+    view = glm::mat4(glm::mat3(cameraController.GetViewMatrix())); // remove translation from the view matrix
     equirectangularToCubemapShader->SetUniformMat4f("view", view);
     equirectangularToCubemapShader->SetUniform1f("alpha", 1.0f - transparency);
     hdr->Bind();
@@ -375,7 +375,7 @@ void scene::SpecularIBL::OnImGuiRender()
 
     ImGui::Text("Albedo texture");
     ImGui::PushID("Albedo texture");
-    if (ImGui::ImageButton(albedoTexture->getPath().c_str(), (void*)albedoTexture->GetId(), ImVec2(50, 50))) {
+    if (ImGui::ImageButton(albedoTexture->GetPath().c_str(), (void*)albedoTexture->GetId(), ImVec2(50, 50))) {
         showMaps = true;
         storedFunction = [&]() { MapBrowser(albedoTexture); };
     }
@@ -383,7 +383,7 @@ void scene::SpecularIBL::OnImGuiRender()
 
     ImGui::Text("Roughness texture");
     ImGui::PushID("Roughness texture");
-    if (ImGui::ImageButton(roughnessTexture->getPath().c_str(), (void*)roughnessTexture->GetId(), ImVec2(50, 50))) {
+    if (ImGui::ImageButton(roughnessTexture->GetPath().c_str(), (void*)roughnessTexture->GetId(), ImVec2(50, 50))) {
         showMaps = true;
         storedFunction = [&]() { MapBrowser(roughnessTexture); };
     }
@@ -391,7 +391,7 @@ void scene::SpecularIBL::OnImGuiRender()
 
     ImGui::Text("Normal texture");
     ImGui::PushID("Normal texture");
-    if (ImGui::ImageButton(normalTexture->getPath().c_str(), (void*)normalTexture->GetId(), ImVec2(50, 50))) {
+    if (ImGui::ImageButton(normalTexture->GetPath().c_str(), (void*)normalTexture->GetId(), ImVec2(50, 50))) {
         showMaps = true;
         storedFunction = [&]() { MapBrowser(normalTexture); };
     }
@@ -399,7 +399,7 @@ void scene::SpecularIBL::OnImGuiRender()
 
     ImGui::Text("Ao texture");
     ImGui::PushID("Ao texture");
-    if (ImGui::ImageButton(aoTexture->getPath().c_str(), (void*)aoTexture->GetId(), ImVec2(50, 50))) {
+    if (ImGui::ImageButton(aoTexture->GetPath().c_str(), (void*)aoTexture->GetId(), ImVec2(50, 50))) {
         showMaps = true;
         storedFunction = [&]() { MapBrowser(aoTexture); };
     }
@@ -415,9 +415,9 @@ void scene::SpecularIBL::OnImGuiRender()
         {
             ImGui::SameLine();
         }
-        if (ImGui::ImageButton(textures[i]->getPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
+        if (ImGui::ImageButton(textures[i]->GetPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
         {
-            hdr = std::make_shared<Texture>(textures[i]->getPath());
+            hdr = std::make_shared<Texture>(textures[i]->GetPath());
             BakeMaps();
         }
     }
@@ -435,9 +435,9 @@ void scene::SpecularIBL::MapBrowser(std::shared_ptr<Texture>& texture)
         {
             ImGui::SameLine();
         }
-        if (ImGui::ImageButton(mapTextures[i]->getPath().c_str(), (void*)mapTextures[i]->GetId(), ImVec2(50, 50)))
+        if (ImGui::ImageButton(mapTextures[i]->GetPath().c_str(), (void*)mapTextures[i]->GetId(), ImVec2(50, 50)))
         {
-            texture = std::make_shared<Texture>(mapTextures[i]->getPath());
+            texture = std::make_shared<Texture>(mapTextures[i]->GetPath());
         }
     }  
 }
@@ -450,7 +450,7 @@ void scene::SpecularIBL::InvokeMapBrowser(std::shared_ptr<Texture>& texture)
 
 void scene::SpecularIBL::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }
 
 void scene::SpecularIBL::BakeMaps()

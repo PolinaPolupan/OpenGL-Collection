@@ -5,158 +5,52 @@
 
 
 class CameraController {
-    
-    bool RotateCamera = false;
-    Camera m_Camera;
-    float m_DeltaTime = 0.f;
-    float lastMousePosX = 400.f;
-    float lastMousePosY = 300.f;
-    bool firstMouse = true;
-
 public:
+    CameraController(Camera camera):
+        m_DeltaTime(0.0f),
+        m_LastMousePosX(400.0f),
+        m_LastMousePosY(300.0f),
+        m_RotateCamera(false),
+        m_FirstMouse(true),
+        m_Camera(camera) {}
 
-    CameraController(Camera camera) : m_Camera(camera) {}
-    CameraController() {}
+    CameraController(): CameraController(Camera()) {}
 
-    Camera& getCamera() { return m_Camera; }
+    Camera& GetCamera() { return m_Camera; }
 
-    void setCameraSensitvity(float sensitivity) {
-        m_Camera.Sensitivity = sensitivity;
-    }
+    void SetCameraSensitvity(float sensitivity) { m_Camera.Sensitivity = sensitivity; }
 
-    void processInput(int event)
-    {
-        switch (event) {
-        case GLFW_KEY_W:
-            m_Camera.CameraPos += m_Camera.CameraSpeed * m_Camera.CameraFront * m_DeltaTime;
-            break;
-        case GLFW_KEY_S:
-            m_Camera.CameraPos -= m_Camera.CameraSpeed * m_Camera.CameraFront * m_DeltaTime;
-            break;
-        case GLFW_KEY_A:
-            m_Camera.CameraPos -= glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
-            break;
-        case GLFW_KEY_D:
-            m_Camera.CameraPos += glm::normalize(glm::cross(m_Camera.CameraFront, m_Camera.CameraUp)) * m_Camera.CameraSpeed * m_DeltaTime;
-            break;
-        case GLFW_KEY_UP:
-            rotateByAngle(m_Camera.Yaw, m_Camera.Pitch + 0.05f);
-            break;
-        case GLFW_KEY_DOWN:
-            rotateByAngle(m_Camera.Yaw, m_Camera.Pitch - 0.05f);
-            break;
-        case GLFW_KEY_LEFT:
-            rotateByAngle(m_Camera.Yaw + 0.05f, m_Camera.Pitch);
-            break;
-        case GLFW_KEY_RIGHT:
-            rotateByAngle(m_Camera.Yaw - 0.05f, m_Camera.Pitch);
-            break;
-        default:
-            break;
-        }
+    void ProcessInput(int event);
 
-    }
+    void RotateCamera(float mousePosX, float mousePosY);
 
-    void rotateCamera(float mousePosX, float mousePosY)
-    {
-        if (firstMouse)
-        {
-            lastMousePosX = mousePosX;
-            lastMousePosY = mousePosY;
-            firstMouse = false;
-        }
-        float xoffset = mousePosX - lastMousePosX;
-         float yoffset = lastMousePosY - mousePosY; // reversed since y-coordinates go from bottom to top
-         lastMousePosX = mousePosX;
-         lastMousePosY = mousePosY;
-
-         xoffset *= m_Camera.Sensitivity;
-         yoffset *= m_Camera.Sensitivity;
-
-         m_Camera.Yaw += xoffset;
-         m_Camera.Pitch += yoffset;
-
-         // make sure that when Pitch is out of bounds, screen doesn't get flipped
-         if (m_Camera.Pitch > 89.0f)
-             m_Camera.Pitch = 89.0f;
-         if (m_Camera.Pitch < -89.0f)
-             m_Camera.Pitch = -89.0f;
-
-         glm::vec3 front;
-         front.x = cos(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
-         front.y = sin(glm::radians(m_Camera.Pitch));
-         front.z = sin(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
-         m_Camera.CameraFront = glm::normalize(front);
-    }
-
-    void rotateByAngle(float yaw, float pitch) {
-        m_Camera.Yaw = yaw;
-        m_Camera.Pitch = pitch;
-
-        // make sure that when Pitch is out of bounds, screen doesn't get flipped
-        if (m_Camera.Pitch > 89.0f)
-            m_Camera.Pitch = 89.0f;
-        if (m_Camera.Pitch < -89.0f)
-            m_Camera.Pitch = -89.0f;
-
-        glm::vec3 front;
-        front.x = cos(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
-        front.y = sin(glm::radians(m_Camera.Pitch));
-        front.z = sin(glm::radians(m_Camera.Yaw)) * cos(glm::radians(m_Camera.Pitch));
-        m_Camera.CameraFront = glm::normalize(front);
-    }
+    void RotateByAngle(float yaw, float pitch);
  
-    void zoomCamera(double xoffset, double yoffset)
-    {
-        m_Camera.FOV -= (float)yoffset  * m_Camera.Sensitivity;
-        if (m_Camera.FOV < 1.0f)
-            m_Camera.FOV = 1.0f;
-        if (m_Camera.FOV > 45.0f)
-            m_Camera.FOV = 45.0f;
-    }
+    void ZoomCamera(double xoffset, double yoffset);
 
-    void OnUpdate(float deltaTime)
-    {
-        m_DeltaTime = deltaTime;
-    }
+    void OnUpdate(float deltaTime) { m_DeltaTime = deltaTime; }
 
-    glm::vec3 getCameraPos()
-    {
-        return m_Camera.CameraPos;
-    }
+    glm::vec3 GetCameraPos() const { return m_Camera.CameraPos; }
 
-    glm::vec3 getCameraFront()
-    {
-        return m_Camera.CameraFront;
-    }
+    glm::vec3 GetCameraFront() const { return m_Camera.CameraFront; }
 
-    glm::vec3 getCameraUp()
-    {
-        return m_Camera.CameraUp;
-    }
+    glm::vec3 GetCameraUp() const { return m_Camera.CameraUp; }
 
-    glm::mat4 getViewMatrix()
-    {
-        return m_Camera.GetViewMatrix();
-    }
+    glm::mat4 GetViewMatrix() { return m_Camera.GetViewMatrix(); }
 
-    glm::mat4 getProjectionMatrix()
-    {
-        return m_Camera.GetProjectionMatrix();
-    }
+    glm::mat4 GetProjectionMatrix() { return m_Camera.GetProjectionMatrix(); }
 
-    void setCameraSpeed(float speed)
-    {
-        m_Camera.CameraSpeed = speed;
-    }
+    void SetCameraSpeed(float speed) { m_Camera.CameraSpeed = speed; }
 
-    void setCameraFOV(float fov)
-    {
-        m_Camera.FOV = fov;
-    }
+    void SetCameraFOV(float fov) { m_Camera.FOV = fov; }
 
-    float getFOV()
-    {
-        return m_Camera.FOV;
-    }
+    float GetFOV() const { return m_Camera.FOV; }
+
+private: 
+    Camera m_Camera;
+    float m_DeltaTime;
+    float m_LastMousePosX;
+    float m_LastMousePosY;
+    bool m_FirstMouse;
+    bool m_RotateCamera;
 };

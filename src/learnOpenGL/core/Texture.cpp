@@ -4,41 +4,41 @@
 
 Texture::Texture(const std::string& path, TextureType textureType, bool gammaCorrection)
 	: m_RendererId(0), m_FilePath(path.c_str()), m_LocalBuffer(nullptr),
-	  m_textureType(textureType),
+	  m_TextureType(textureType),
 	  m_Width(0), m_Height(0), m_BPP(0)
 {
 	if (path.find(".hdr") != std::string::npos) {
-		initHdr(path.c_str(), textureType, gammaCorrection);
+		InitHdr(path.c_str(), textureType, gammaCorrection);
 	}
 	else {
-		init(path.c_str(), textureType, gammaCorrection);
+		Init(path.c_str(), textureType, gammaCorrection);
 	}
 }
 
 Texture::Texture(const char * path, TextureType textureType, bool gammaCorrection)
 	: m_RendererId(0), m_FilePath(path), m_LocalBuffer(nullptr),
-	  m_textureType(textureType),
+	  m_TextureType(textureType),
 	  m_Width(0), m_Height(0), m_BPP(0)
 {
 	std::string pathStr = std::string(path);
 	if (pathStr.find(".hdr") != std::string::npos) {
-		initHdr(path, textureType, gammaCorrection);
+		InitHdr(path, textureType, gammaCorrection);
 	}
 	else {
-		init(path, textureType, gammaCorrection);
+		Init(path, textureType, gammaCorrection);
 	}
 }
 
 Texture::Texture(const std::filesystem::path& path, TextureType textureType, bool gammaCorrection)
 	: m_RendererId(0), m_FilePath(path.string()), m_LocalBuffer(nullptr),
-	m_textureType(textureType),
+	m_TextureType(textureType),
 	m_Width(0), m_Height(0), m_BPP(0)
 {
 	if (path.extension() == ".hdr") {
-		initHdr(path.string().c_str(), textureType, gammaCorrection);
+		InitHdr(path.string().c_str(), textureType, gammaCorrection);
 	}
 	else {
-		init(path.string().c_str(), textureType, gammaCorrection);
+		Init(path.string().c_str(), textureType, gammaCorrection);
 	}
 }
 
@@ -58,7 +58,7 @@ void Texture::Unbind() const
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture::init(const char* path, TextureType textureType, bool gammaCorrection)
+void Texture::Init(const char* path, TextureType textureType, bool gammaCorrection)
 {
 	stbi_set_flip_vertically_on_load(1);
 
@@ -98,7 +98,7 @@ void Texture::init(const char* path, TextureType textureType, bool gammaCorrecti
 		stbi_image_free(m_LocalBuffer);
 }
 
-void Texture::initHdr(const char* path, TextureType textureType, bool gammaCorrection)
+void Texture::InitHdr(const char* path, TextureType textureType, bool gammaCorrection)
 {
 	stbi_set_flip_vertically_on_load(1);
 

@@ -16,23 +16,23 @@ scene::ModelLoading::~ModelLoading()
 void scene::ModelLoading::OnUpdate(float deltaTime)
 {
     cameraController.OnUpdate(deltaTime);
-    lightManager.update();
-    objectManager.update();
+    lightManager.Update();
+    objectManager.Update();
 }
 
 void scene::ModelLoading::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::ModelLoading::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::ModelLoading::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
 
 void scene::ModelLoading::OnRender()
@@ -41,17 +41,17 @@ void scene::ModelLoading::OnRender()
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
     shader.Bind();
-    shader.SetUniform3f("viewPos", cameraController.getCameraPos());
-    shader.SetUniform1i("lightsNum", lightManager.getLights().size());
+    shader.SetUniform3f("viewPos", cameraController.GetCameraPos());
+    shader.SetUniform1i("lightsNum", lightManager.GetLights().size());
     
-    for (int i = 0; i < lightManager.getLights().size(); i++)
+    for (int i = 0; i < lightManager.GetLights().size(); i++)
     {
-        renderer.RenderLight(*lightManager.getLights()[i], shader);  
+        renderer.RenderLight(*lightManager.GetLights()[i], shader);  
     }
 
-    for (auto& o : objectManager.getObjects())
+    for (auto& o : objectManager.GetObjects())
     {
         renderer.RenderObject(*o, shader);
     }
@@ -73,7 +73,7 @@ void scene::ModelLoading::OnImGuiRender()
                 if (ImGui::Selectable(m_ModelsPaths[n].c_str(), is_selected))
                 {
                     item_current_idx = n;
-                    objectManager.addObject(m_ModelsPaths[n]);
+                    objectManager.AddObject(m_ModelsPaths[n]);
                 }
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected)
@@ -87,7 +87,7 @@ void scene::ModelLoading::OnImGuiRender()
 
     AddLightsWidget(lightManager);
   
-    LightsTabBar(lightManager.getLights());
+    LightsTabBar(lightManager.GetLights());
 
     ObjectsList(objectManager);
 }

@@ -68,7 +68,7 @@ void scene::Instancing::OnUpdate(float deltaTime)
 
 void scene::Instancing::OnMouseMovedEvent(double posX, double posY)
 {
-	cameraController.rotateCamera(posX, posY);
+	cameraController.RotateCamera(posX, posY);
 }
 
 void scene::Instancing::OnMouseScrolledEvent(double offsetX, double offsetY)
@@ -113,7 +113,7 @@ void scene::Instancing::OnImGuiRender()
 
 void scene::Instancing::OnEvent(int event)
 {
-	cameraController.processInput(event);
+	cameraController.ProcessInput(event);
 }
 
 void scene::Instancing::OnRenderQuads()
@@ -167,9 +167,9 @@ void scene::Instancing::reloadAsteroids()
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
-    for (unsigned int i = 0; i < rock->getMeshes().size(); i++)
+    for (unsigned int i = 0; i < rock->GetMeshes().size(); i++)
     {
-        std::shared_ptr<VertexArray> VAO = (*rock)[i].getVAO();
+        std::shared_ptr<VertexArray> VAO = (*rock)[i].GetVAO();
         VAO->Bind();
         // vertex attributes
         std::size_t vec4Size = sizeof(glm::vec4);
@@ -193,10 +193,10 @@ void scene::Instancing::reloadAsteroids()
 
 void scene::Instancing::OnRenderAsteroids()
 {
-    renderer.Submit(cameraController.getCamera());
+    renderer.Submit(cameraController.GetCamera());
     // configure transformation matrices
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 1000.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 view = cameraController.GetViewMatrix();
     asteroidsShader->Bind();
     asteroidsShader->SetUniformMat4f("projection", projection);
     asteroidsShader->SetUniformMat4f("view", view);
@@ -215,10 +215,10 @@ void scene::Instancing::OnRenderAsteroids()
     asteroidsShader->Bind();
     asteroidsShader->SetUniform1i("texture_diffuse1", 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, rock->getTexturesLoaded()["rock.png"]->GetId()); // note: we also made the textures_loaded vector public (instead of private) from the model class.
-    for (unsigned int i = 0; i < rock->getMeshes().size(); i++)
+    glBindTexture(GL_TEXTURE_2D, rock->GetTexturesLoaded()["rock.png"]->GetId()); // note: we also made the textures_loaded vector public (instead of private) from the model class.
+    for (unsigned int i = 0; i < rock->GetMeshes().size(); i++)
     {
-        (*rock)[i].getVAO()->Bind();
+        (*rock)[i].GetVAO()->Bind();
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>((*rock)[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
         glBindVertexArray(0);
     }

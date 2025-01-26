@@ -58,9 +58,9 @@ scene::BasicLighting::BasicLighting()
 
     m_CameraSpeed = 2.5f;
 
-    material.setDiffuseMap(GetResourcePath("res/textures/container2.png"));
-    material.setSpecularMap(GetResourcePath("res/textures/container2_specular.png"));
-    material.setEmissionMap(GetResourcePath("res/textures/matrix.jpg"));
+    material.SetDiffuseMap(GetResourcePath("res/textures/container2.png"));
+    material.SetSpecularMap(GetResourcePath("res/textures/container2_specular.png"));
+    material.SetEmissionMap(GetResourcePath("res/textures/matrix.jpg"));
 
     textures = getTextures();
  
@@ -118,7 +118,7 @@ scene::BasicLighting::~BasicLighting()
 void scene::BasicLighting::OnUpdate(float deltaTime)
 {
     m_cameraController.OnUpdate(deltaTime);
-    lightManager.update();
+    lightManager.Update();
 }
 
 void scene::BasicLighting::OnRender()
@@ -127,16 +127,16 @@ void scene::BasicLighting::OnRender()
      glEnable(GL_DEPTH_TEST);
      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      Renderer renderer;
-     renderer.Submit(m_cameraController.getCamera());
+     renderer.Submit(m_cameraController.GetCamera());
      {
         m_Shader->Bind();
-        m_Shader->SetUniformMat4f("view", m_cameraController.getViewMatrix());
-        m_Shader->SetUniformMat4f("projection", m_cameraController.getProjectionMatrix());
+        m_Shader->SetUniformMat4f("view", m_cameraController.GetViewMatrix());
+        m_Shader->SetUniformMat4f("projection", m_cameraController.GetProjectionMatrix());
         m_Shader->SetUniformMat4f("model", glm::mat4(1.f));
         
-        m_Shader->SetUniform3f("viewPos", m_cameraController.getCameraPos());
+        m_Shader->SetUniform3f("viewPos", m_cameraController.GetCameraPos());
  
-        m_Shader->SetUniform1i("lightsNum", lightManager.getLights().size());
+        m_Shader->SetUniform1i("lightsNum", lightManager.GetLights().size());
         m_Shader->SetUniform3f("material.diffuseColor", material.diffuseColor);
         m_Shader->SetUniform3f("material.specularColor", material.specularColor);
         material.diffuseMap->Bind(0);
@@ -149,10 +149,10 @@ void scene::BasicLighting::OnRender()
         m_Shader->SetUniform1f("material.shininess", material.shininess);
         m_Shader->SetUniform1f("material.emissionWeight", material.emissionWeight);
 
-        for (int i = 0; i < lightManager.getLights().size(); i++)
+        for (int i = 0; i < lightManager.GetLights().size(); i++)
         {
             m_Shader->Bind();
-            renderer.RenderLight(*lightManager.getLights()[i], *m_Shader);
+            renderer.RenderLight(*lightManager.GetLights()[i], *m_Shader);
         }
         renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
     }
@@ -172,7 +172,7 @@ void scene::BasicLighting::OnImGuiRender()
 
     AddLightsWidget(lightManager);
 
-    LightsTabBar(lightManager.getLights());
+    LightsTabBar(lightManager.GetLights());
     
     if (show_edit)
     {
@@ -184,10 +184,10 @@ void scene::BasicLighting::OnImGuiRender()
 
 void scene::BasicLighting::OnEvent(int event)
 {
-    m_cameraController.processInput(event);
+    m_cameraController.ProcessInput(event);
 }
 
 void scene::BasicLighting::OnMouseMovedEvent(double posX, double posY)
 {
-    m_cameraController.rotateCamera(posX, posY);
+    m_cameraController.RotateCamera(posX, posY);
 }

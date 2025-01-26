@@ -200,12 +200,12 @@ void scene::Bloom::OnUpdate(float deltaTime)
 
 void scene::Bloom::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(0, posY);
+    cameraController.RotateCamera(0, posY);
 }
 
 void scene::Bloom::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::Bloom::OnRender()
@@ -220,9 +220,9 @@ void scene::Bloom::OnRender()
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    cameraController.getCamera().Sensitivity = 0.001f;
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    cameraController.GetCamera().Sensitivity = 0.001f;
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
     shader->Bind();
     shader->SetUniformMat4f("projection", projection);
@@ -234,7 +234,7 @@ void scene::Bloom::OnRender()
         shader->SetUniform3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
         shader->SetUniform3f("lights[" + std::to_string(i) + "].Color", lightColors[i]);
     }
-    shader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    shader->SetUniform3f("viewPos", cameraController.GetCameraPos());
     shader->SetUniform1f("threshold", threshold);
     // create one large cube that acts as the floor
     model = glm::mat4(1.0f);
@@ -353,5 +353,5 @@ void scene::Bloom::OnImGuiRender()
 
 void scene::Bloom::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

@@ -149,33 +149,33 @@ void scene::PBR::OnUpdate(float deltaTime)
 
 void scene::PBR::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::PBR::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::PBR::OnRender()
 {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    cameraController.getCamera().Sensitivity = 0.005f;
-    renderer.Submit(cameraController.getCamera());
+    cameraController.GetCamera().Sensitivity = 0.005f;
+    renderer.Submit(cameraController.GetCamera());
 
     shader->Bind();
-    glm::mat4 view = cameraController.getViewMatrix();
-    renderer.Submit(cameraController.getCamera());
+    glm::mat4 view = cameraController.GetViewMatrix();
+    renderer.Submit(cameraController.GetCamera());
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
     shader->SetUniformMat4f("projection", projection);
     shader->SetUniformMat4f("view", view);
-    shader->SetUniform3f("camPos", cameraController.getCameraPos());
+    shader->SetUniform3f("camPos", cameraController.GetCameraPos());
 
     shaderTextured->Bind();
     shaderTextured->SetUniformMat4f("projection", projection);
     shaderTextured->SetUniformMat4f("view", view);
-    shaderTextured->SetUniform3f("camPos", cameraController.getCameraPos());
+    shaderTextured->SetUniform3f("camPos", cameraController.GetCameraPos());
 
     // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
     glm::mat4 model = glm::mat4(1.0f);
@@ -283,5 +283,5 @@ void scene::PBR::OnImGuiRender()
 
 void scene::PBR::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }

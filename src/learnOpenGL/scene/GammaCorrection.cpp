@@ -61,12 +61,12 @@ void scene::GammaCorrection::OnUpdate(float deltaTime)
 
 void scene::GammaCorrection::OnMouseMovedEvent(double posX, double posY)
 {
-    cameraController.rotateCamera(posX, posY);
+    cameraController.RotateCamera(posX, posY);
 }
 
 void scene::GammaCorrection::OnMouseScrolledEvent(double offsetX, double offsetY)
 {
-    cameraController.zoomCamera(offsetX, offsetY);
+    cameraController.ZoomCamera(offsetX, offsetY);
 }
 
 void scene::GammaCorrection::OnRender()
@@ -74,16 +74,16 @@ void scene::GammaCorrection::OnRender()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    cameraController.setCameraSpeed(1);
-    cameraController.setCameraSensitvity(0.005);
+    cameraController.SetCameraSpeed(1);
+    cameraController.SetCameraSensitvity(0.005);
     // draw objects
     shader->Bind();
-    glm::mat4 projection = glm::perspective(glm::radians(cameraController.getCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    glm::mat4 view = cameraController.getViewMatrix();
+    glm::mat4 projection = glm::perspective(glm::radians(cameraController.GetCamera().Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = cameraController.GetViewMatrix();
     shader->SetUniformMat4f("projection", projection);
     shader->SetUniformMat4f("view", view);
 
-    shader->SetUniform3f("viewPos", cameraController.getCameraPos());
+    shader->SetUniform3f("viewPos", cameraController.GetCameraPos());
 
     shader->SetUniform3fv("lightPositions", 4, &lightPositions[0][0]);
     shader->SetUniform3fv("lightColors", 4, &lightColors[0][0]);
@@ -110,5 +110,5 @@ void scene::GammaCorrection::OnImGuiRender()
 
 void scene::GammaCorrection::OnEvent(int event)
 {
-    cameraController.processInput(event);
+    cameraController.ProcessInput(event);
 }
