@@ -36,9 +36,9 @@ public:
 
 private:
     void RenderMesh(Mesh& mesh, Shader& shader, glm::vec3 pos, glm::vec3 scale) const;
-    void enableStencil();
-    void disableStencil();
-    void defaultStencil();
+    void EnableStencil();
+    void DisableStencil();
+    void DefaultStencil();
     SceneData m_SceneData;
-    Shader selection;
+    Shader m_Selection;
 };

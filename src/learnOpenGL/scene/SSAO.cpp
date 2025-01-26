@@ -168,7 +168,7 @@ scene::SSAO::SSAO()
         std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    generateSamples();
+    GenerateSamples();
 
     glGenTextures(1, &noiseTexture);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
@@ -363,7 +363,7 @@ void scene::SSAO::OnImGuiRender()
     ImGui::SliderFloat("Radius", &radius, 0, 10);
     ImGui::SliderFloat("Bias", &bias, 0, 1);
     if (ImGui::SliderInt("Samples", &samples, 0, 300)) {
-        generateSamples();
+        GenerateSamples();
     }
 
     light = !ssao;
@@ -375,7 +375,7 @@ void scene::SSAO::OnEvent(int event)
 	cameraController.ProcessInput(event);
 }
 
-void scene::SSAO::generateSamples()
+void scene::SSAO::GenerateSamples()
 {
     ssaoKernel.clear();
     ssaoNoise.clear();

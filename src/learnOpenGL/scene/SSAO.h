@@ -47,6 +47,6 @@ namespace scene
 		void OnRender() override;
 		void OnImGuiRender() override;
 		void OnEvent(int event) override;
-		void generateSamples();
+		void GenerateSamples();
 	};
 }

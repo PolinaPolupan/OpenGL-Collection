@@ -22,7 +22,7 @@ bool GLLogCall(const char* function, const char* file, int line)
     return true;
 }
 
-Renderer::Renderer() : selection(GetResourcePath("res\\shaders\\Light.shader"))
+Renderer::Renderer() : m_Selection(GetResourcePath("res\\shaders\\Light.shader"))
 {
     
 }
@@ -75,7 +75,7 @@ void Renderer::RenderLight(Light& light, Shader& shader)
 
 void Renderer::RenderObject(Model& model, Shader& shader) 
 {
-    disableStencil();
+    DisableStencil();
     for (unsigned int i = 0; i < model.GetMeshes().size(); i++)
     {
             
@@ -153,20 +153,20 @@ void Renderer::RenderMesh(Mesh& mesh, Shader& shader, glm::vec3 pos, glm::vec3 s
 	Draw(*mesh.GetVAO(), *mesh.GetIBO(), shader);
 }
 
-void Renderer::enableStencil()
+void Renderer::EnableStencil()
 {
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
 }
 
-void Renderer::disableStencil()
+void Renderer::DisableStencil()
 {
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
 }
 
-void Renderer::defaultStencil()
+void Renderer::DefaultStencil()
 {
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
