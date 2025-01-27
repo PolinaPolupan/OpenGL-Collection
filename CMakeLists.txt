@@ -45,6 +45,7 @@ src/learnOpenGL/core/Texture.cpp
 src/learnOpenGL/core/VertexArray.cpp
 src/learnOpenGL/core/VertexBuffer.cpp
 src/learnOpenGL/core/CameraController.cpp
+
 )
 
 set(IMGUI_SOURCE
@@ -64,7 +65,7 @@ set(STB_IMAGE_SOURCE
 src/ext/stb_image/stb_image.cpp
 )
 
-add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE})
+add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE} )
 
 add_subdirectory(src/ext/glad EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/glfw EXCLUDE_FROM_ALL)

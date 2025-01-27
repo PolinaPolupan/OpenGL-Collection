@@ -22,7 +22,17 @@ namespace scene
 			irradianceShader,
 			prefilterShader,
 			brdfShader;
-		std::shared_ptr<Texture> albedoTexture, normalTexture, metallicTexture, roughnessTexture, aoTexture, hdr;
+		std::shared_ptr<Texture> 
+			albedoTexture, 
+			normalTexture, 
+			metallicTexture, 
+			roughnessTexture, 
+			aoTexture, 
+			hdr,
+			brdfLUTTexture,
+			envCubemapTexture,
+			irradianceMapTexture,
+			prefilterMapTexture;
 		std::vector<std::shared_ptr<Texture>> textures;
 		std::vector<std::shared_ptr<Texture>> mapTextures;
 
@@ -41,10 +51,6 @@ namespace scene
 
 		unsigned int captureFBO;
 		unsigned int captureRBO;
-		unsigned int envCubemap;
-		unsigned int irradianceMap;
-		unsigned int prefilterMap;
-		unsigned int brdfLUTTexture;
 
 		float transparency = 0.0f;
 		float roughness = 0.5f;
