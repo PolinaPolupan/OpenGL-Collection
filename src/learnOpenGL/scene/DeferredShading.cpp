@@ -90,7 +90,7 @@ scene::DeferredShading::DeferredShading()
 
     quadVAO->AddBuffer(*quadVBO, quadLayout);
 
-    modelsPaths = getObjectsPath();
+    modelsPaths = GetObjectsPath();
 
     objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
     objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));

@@ -12,9 +12,12 @@
 #include "ObjectManager.h"
 
 
-static void objectUi(Model& object)
+static void ObjectUi(Model& object)
 {
     ImGui::SliderFloat3("Position", &object.position[0], -20.f, 20.f);
+    if (ImGui::SliderFloat("Scale1", &object.scale[0], 0, 1)) {
+        object.scale[1] = object.scale[2] = object.scale[0];
+    }
     ImGui::SliderFloat3("Scale", &object.scale[0], -20.f, 20.f);
 }
 
@@ -66,7 +69,7 @@ static void ObjectsList(ObjectManager& objectManager)
     }
     if (objectManager.GetObjects().size())
     {
-        objectUi(*objectManager.GetObjects()[objectManager.current_selected_object]);
+        ObjectUi(*objectManager.GetObjects()[objectManager.current_selected_object]);
     }
 }
 

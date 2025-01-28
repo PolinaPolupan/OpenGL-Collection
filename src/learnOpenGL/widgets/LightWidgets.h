@@ -56,7 +56,7 @@ static void LightsTabBar(std::vector<std::shared_ptr<Light>>& lights)
                 if (ImGui::BeginTabItem(("light_" + std::to_string(i)).c_str()))
                 {
                     ImGui::Text(("light_" + std::to_string(i)).c_str());
-                    std::string items[] = { getLightTypeName(LightType::Spot), getLightTypeName(LightType::Point), getLightTypeName(LightType::Directional) };
+                    std::string items[] = { GetLightTypeName(LightType::Spot), GetLightTypeName(LightType::Point), GetLightTypeName(LightType::Directional) };
                    
                     static int item_current_idx = lights[i]->GetType(); // Here we store our selection data as an index.
 
@@ -106,7 +106,7 @@ static void AddLightsWidget(LightManager& lightManager)
 {
     if (ImGui::TreeNode("Lights"))
     {
-        std::string items[] = { getLightTypeName(LightType::Spot), getLightTypeName(LightType::Point), getLightTypeName(LightType::Directional) };
+        std::string items[] = { GetLightTypeName(LightType::Spot), GetLightTypeName(LightType::Point), GetLightTypeName(LightType::Directional) };
         static int item_current_idx = 0; // Here we store our selection data as an index.
         if (ImGui::BeginListBox("lights"))
         {
@@ -116,7 +116,7 @@ static void AddLightsWidget(LightManager& lightManager)
                 if (ImGui::Selectable(items[n].c_str(), is_selected))
                 {
                     item_current_idx = n;
-                    LightType type = getLightTypeByName(items[n]);
+                    LightType type = GetLightTypeByName(items[n]);
                     lightManager.AddLight(type);
                 }
 

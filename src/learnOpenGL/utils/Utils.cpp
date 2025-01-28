@@ -24,7 +24,7 @@
 //// +Z (front) 
 //// -Z (back)
 //// -------------------------------------------------------
-unsigned int loadCubemap(std::vector<std::string> faces)
+unsigned int LoadCubemap(std::vector<std::string> faces)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -56,7 +56,7 @@ unsigned int loadCubemap(std::vector<std::string> faces)
     return textureID;
 }
 
-std::string getLightTypeName(LightType lightType)
+std::string GetLightTypeName(LightType lightType)
 {
     switch (lightType)
     {
@@ -71,7 +71,7 @@ std::string getLightTypeName(LightType lightType)
     }
 }
 
-LightType getLightTypeByName(std::string name)
+LightType GetLightTypeByName(std::string name)
 {
     if (name == "Spot") return LightType::Spot;
     if (name == "Directional") return LightType::Directional;
@@ -79,10 +79,20 @@ LightType getLightTypeByName(std::string name)
     return LightType::Default;
 }
 
-std::vector<std::string> getTexturesPath(const std::vector<std::string>& extensions)
+std::vector<std::string> GetTexturesPath(const std::vector<std::string>& extensions, const std::vector<std::string>& paths)
 {
     std::vector<std::string> textures;
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(GetResourcePath("res/textures")))
+
+    for (auto& path : paths) {
+        LoadTexturesFromPath(GetResourcePath(path), textures, extensions);
+    }
+   
+    return textures;
+}
+
+void LoadTexturesFromPath(const std::filesystem::path& path, std::vector<std::string>& textures, const std::vector<std::string>& extensions)
+{
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
     {
         std::string path = entry.path().string();
 
@@ -94,17 +104,15 @@ std::vector<std::string> getTexturesPath(const std::vector<std::string>& extensi
             }
         }
     }
-
-    return textures;
 }
 
-std::vector<std::string> getObjectsPath()
+std::vector<std::string> GetObjectsPath()
 {
     std::vector<std::string> objects;
 
     for (auto& p : std::filesystem::recursive_directory_iterator(GetResourcePath("res/objects")))
     {
-        if (p.path().extension().string() == ".obj" || p.path().extension().string() == ".fbx")
+        if (p.path().extension().string() == ".obj" || p.path().extension().string() == ".fbx" || p.path().extension().string() == ".FBX")
         {
             std::cout << p.path().string() << '\n';
             objects.push_back(p.path().string());
@@ -114,10 +122,10 @@ std::vector<std::string> getObjectsPath()
     return objects;
 }
 
-std::vector<std::shared_ptr<Texture>> getTextures(const std::vector<std::string>& extensions)
+std::vector<std::shared_ptr<Texture>> GetTextures(const std::vector<std::string>& extensions, const std::vector<std::string>& paths)
 {
     std::vector<std::shared_ptr<Texture>> textures;
-    for (auto& path : getTexturesPath(extensions))
+    for (auto& path : GetTexturesPath(extensions, paths))
     {
         textures.push_back(std::make_unique<Texture>(path, TextureType::Standard));
     }

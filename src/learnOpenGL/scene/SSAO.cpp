@@ -95,7 +95,7 @@ scene::SSAO::SSAO()
 
     quadVAO->AddBuffer(*quadVBO, quadLayout);
 
-    modelsPaths = getObjectsPath();
+    modelsPaths = GetObjectsPath();
 
     shaderGeometryPass = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SSAOGeometry.shader"));
     shaderLightingPass = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SSAOLighting.shader"));

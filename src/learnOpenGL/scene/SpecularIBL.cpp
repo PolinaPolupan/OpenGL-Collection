@@ -174,6 +174,7 @@ scene::SpecularIBL::SpecularIBL()
     hdr = std::make_shared<Texture>(GetResourcePath("res\\textures\\photo_studio_loft_hall_4k.hdr"));
 
     albedoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
+    metallicTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
     roughnessTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
     normalTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
     aoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
@@ -235,12 +236,12 @@ scene::SpecularIBL::SpecularIBL()
 
     brdfLUTTexture = std::make_shared<Texture>(brdfLUTBuilder);
 
-
-    textures = getTextures({ ".hdr" });
-    mapTextures = getTextures();
+    modelsPaths = GetObjectsPath();
+    textures = GetTextures({ ".hdr" });
+    mapTextures = GetTextures({ ".jpeg", ".jpg", ".png", ".tga"}, {"res/textures"});
 
     pbrShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecular.shader"));
-    shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecularTextured.shader"));
+    pbrShaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecularTextured.shader"));
     equirectangularToCubemapShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\EquirectangularToCubemap.shader"));
     backgroundShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Background.shader"));
     irradianceShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Irradiance.shader"));
@@ -253,6 +254,16 @@ scene::SpecularIBL::SpecularIBL()
     pbrShader->SetUniform1i("irradianceMap", 0);
     pbrShader->SetUniform1i("prefilterMap", 1);
     pbrShader->SetUniform1i("brdfLUT", 2);
+
+    pbrShaderTextured->Bind();
+    pbrShaderTextured->SetUniform1i("irradianceMap", 0);
+    pbrShaderTextured->SetUniform1i("prefilterMap", 1);
+    pbrShaderTextured->SetUniform1i("brdfLUT", 2);
+    pbrShaderTextured->SetUniform1i("albedoMap", 3);
+    pbrShaderTextured->SetUniform1i("normalMap", 4);
+    pbrShaderTextured->SetUniform1i("metallicMap", 5);
+    pbrShaderTextured->SetUniform1i("roughnessMap", 6);
+    pbrShaderTextured->SetUniform1i("aoMap", 7);
 
     backgroundShader->Bind();
     backgroundShader->SetUniform1i("environmentMap", 0);
@@ -287,7 +298,7 @@ scene::SpecularIBL::SpecularIBL()
     quadVBO->Unbind();
     quadIBO->Unbind();
     pbrShader->Unbind();
-    shaderTextured->Unbind();
+    pbrShaderTextured->Unbind();
     equirectangularToCubemapShader->Unbind();
     backgroundShader->Unbind();
     irradianceShader->Unbind();
@@ -308,18 +319,20 @@ scene::SpecularIBL::~SpecularIBL()
     quadVBO->Unbind();
     quadIBO->Unbind();
     pbrShader->Unbind();
-    shaderTextured->Unbind();
+    pbrShaderTextured->Unbind();
     equirectangularToCubemapShader->Unbind();
     backgroundShader->Unbind();
     irradianceShader->Unbind();
     prefilterShader->Unbind();
     brdfShader->Unbind();
     hdr->Unbind();
+    objectManager.Clear();
 }
 
 void scene::SpecularIBL::OnUpdate(float deltaTime)
 {
 	cameraController.OnUpdate(deltaTime);
+    objectManager.Update();
 }
 
 void scene::SpecularIBL::OnMouseMovedEvent(double posX, double posY)
@@ -340,57 +353,119 @@ void scene::SpecularIBL::OnRender()
 
     cameraController.GetCamera().Sensitivity = 0.005f;
 
-    // render scene, supplying the convoluted irradiance map to the final shader.
-    // ------------------------------------------------------------------------------------------
-    pbrShader->Bind();
-    renderer.Submit(cameraController.GetCamera());
     glm::mat4 view = cameraController.GetViewMatrix();
-    pbrShader->SetUniformMat4f("view", view);
-    pbrShader->SetUniform3f("camPos", cameraController.GetCameraPos());
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-    pbrShader->SetUniformMat4f("projection", projection);
-
-    pbrShader->SetUniform3f("albedo", albedoColor);
-
-    // bind pre-computed IBL data
-    irradianceMapTexture->Bind();
-    prefilterMapTexture->Bind(1);
-    brdfLUTTexture->Bind(2);
-
-    // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
-    glm::mat4 model = glm::mat4(1.0f);
-
-    pbrShader->Bind();
-    pbrShader->SetUniform1f("metallic", metallic);
-    pbrShader->SetUniform1f("roughness", roughness);
-    pbrShader->SetUniform1f("ao", ao);
-    pbrShader->SetUniformMat4f("model", model);
-    pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-    sphereVAO->Bind();
-    glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-
-
-    // render light source (simply re-render sphere at light positions)
-    // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
-    // keeps the codeprint small.
-    for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
-    {
+    if (!textured) {
+        // render scene, supplying the convoluted irradiance map to the final shader.
+        // ------------------------------------------------------------------------------------------
         pbrShader->Bind();
-        glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-        newPos = lightPositions[i];
-        pbrShader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
-        pbrShader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+        renderer.Submit(cameraController.GetCamera());
+        pbrShader->SetUniformMat4f("view", view);
+        pbrShader->SetUniform3f("camPos", cameraController.GetCameraPos());
 
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, newPos);
-        model = glm::scale(model, glm::vec3(0.5f));
+        glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+        pbrShader->SetUniformMat4f("projection", projection);
+
+        pbrShader->SetUniform3f("albedo", albedoColor);
+
+        // bind pre-computed IBL data
+        irradianceMapTexture->Bind();
+        prefilterMapTexture->Bind(1);
+        brdfLUTTexture->Bind(2);
+
+        // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
+        glm::mat4 model = glm::mat4(1.0f);
+
+        pbrShader->Bind();
+        pbrShader->SetUniform1f("metallic", metallic);
+        pbrShader->SetUniform1f("roughness", roughness);
+        pbrShader->SetUniform1f("ao", ao);
         pbrShader->SetUniformMat4f("model", model);
         pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
         sphereVAO->Bind();
         glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-    }
 
+
+        // render light source (simply re-render sphere at light positions)
+        // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+        // keeps the codeprint small.
+        for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+        {
+            pbrShader->Bind();
+            glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+            newPos = lightPositions[i];
+            pbrShader->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
+            pbrShader->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, newPos);
+            model = glm::scale(model, glm::vec3(0.5f));
+            pbrShader->SetUniformMat4f("model", model);
+            pbrShader->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+            sphereVAO->Bind();
+            glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+        }
+    } else {
+        // render scene, supplying the convoluted irradiance map to the final shader.
+        // ------------------------------------------------------------------------------------------
+        pbrShaderTextured->Bind();
+        renderer.Submit(cameraController.GetCamera());
+        
+        pbrShaderTextured->SetUniformMat4f("view", view);
+        pbrShaderTextured->SetUniform3f("camPos", cameraController.GetCameraPos());
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+        pbrShaderTextured->SetUniformMat4f("projection", projection);
+
+        pbrShaderTextured->SetUniform3f("albedo", albedoColor);
+
+        // bind pre-computed IBL data
+        irradianceMapTexture->Bind();
+        prefilterMapTexture->Bind(1);
+        brdfLUTTexture->Bind(2);
+        albedoTexture->Bind(3);
+        normalTexture->Bind(4);
+        metallicTexture->Bind(5);
+        roughnessTexture->Bind(6);
+        aoTexture->Bind(7);
+
+        // render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
+        glm::mat4 model = glm::mat4(1.0f);
+
+        pbrShaderTextured->Bind();
+        pbrShaderTextured->SetUniform1f("metallic", metallic);
+        pbrShaderTextured->SetUniform1f("roughness", roughness);
+        pbrShaderTextured->SetUniform1f("ao", ao);
+        pbrShaderTextured->SetUniformMat4f("model", model);
+        pbrShaderTextured->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+
+        for (auto& o : objectManager.GetObjects()) {
+            pbrShaderTextured->Bind();
+            renderer.RenderObject(*o, *pbrShaderTextured);
+        }
+
+
+        // render light source (simply re-render sphere at light positions)
+        // this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+        // keeps the codeprint small.
+        for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+        {
+            pbrShaderTextured->Bind();
+            glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+            newPos = lightPositions[i];
+            pbrShaderTextured->SetUniform3f("lightPositions[" + std::to_string(i) + "]", newPos);
+            pbrShaderTextured->SetUniform3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, newPos);
+            model = glm::scale(model, glm::vec3(0.5f));
+            pbrShaderTextured->SetUniformMat4f("model", model);
+            pbrShaderTextured->SetUniformMat3f("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+            sphereVAO->Bind();
+            glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+        }
+    }
+    
     equirectangularToCubemapShader->Bind();
     view = glm::mat4(glm::mat3(cameraController.GetViewMatrix())); // remove translation from the view matrix
     equirectangularToCubemapShader->SetUniformMat4f("view", view);
@@ -415,6 +490,8 @@ void scene::SpecularIBL::OnImGuiRender()
 
     textured = checked;
     static std::function<void()> storedFunction; 
+
+    LoadObjectsList(modelsPaths, objectManager);
 
     ImGui::SliderFloat("Transparency", &transparency, 0.0f, 1.0f);
     ImGui::ColorEdit3("Albedo color", &albedoColor[0]);
@@ -444,6 +521,14 @@ void scene::SpecularIBL::OnImGuiRender()
     }
     ImGui::PopID();
 
+    ImGui::Text("Metallic texture");
+    ImGui::PushID("Metallic texture");
+    if (ImGui::ImageButton(metallicTexture->GetPath().c_str(), (void*)metallicTexture->GetId(), ImVec2(50, 50))) {
+        showMaps = true;
+        storedFunction = [&]() { MapBrowser(metallicTexture); };
+    }
+    ImGui::PopID();
+
     ImGui::Text("Normal texture");
     ImGui::PushID("Normal texture");
     if (ImGui::ImageButton(normalTexture->GetPath().c_str(), (void*)normalTexture->GetId(), ImVec2(50, 50))) {
@@ -460,18 +545,10 @@ void scene::SpecularIBL::OnImGuiRender()
     }
     ImGui::PopID();
 
-    for (int i = 0; i < textures.size(); i++)
-    {
-        if (i % 3 == 0)
-        {
-            ImGui::NewLine();
-        }
-        else
-        {
-            ImGui::SameLine();
-        }
-        if (ImGui::ImageButton(textures[i]->GetPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50)))
-        {
+    for (int i = 0; i < textures.size(); i++) {
+        if (i % 3 == 0) ImGui::NewLine();
+        else ImGui::SameLine();
+        if (ImGui::ImageButton(textures[i]->GetPath().c_str(), (void*)textures[i]->GetId(), ImVec2(50, 50))) {
             hdr = std::make_shared<Texture>(textures[i]->GetPath());
             BakeMaps();
         }
@@ -480,27 +557,13 @@ void scene::SpecularIBL::OnImGuiRender()
 
 void scene::SpecularIBL::MapBrowser(std::shared_ptr<Texture>& texture)
 {
-    for (int i = 0; i < mapTextures.size(); i++)
-    {
-        if (i % 3 == 0)
-        {
-            ImGui::NewLine();
-        }
-        else
-        {
-            ImGui::SameLine();
-        }
-        if (ImGui::ImageButton(mapTextures[i]->GetPath().c_str(), (void*)mapTextures[i]->GetId(), ImVec2(50, 50)))
-        {
+    for (int i = 0; i < mapTextures.size(); i++) {
+        if (i % 3 == 0) ImGui::NewLine();
+        else ImGui::SameLine();
+        if (ImGui::ImageButton(mapTextures[i]->GetPath().c_str(), (void*)mapTextures[i]->GetId(), ImVec2(50, 50))) {
             texture = std::make_shared<Texture>(mapTextures[i]->GetPath());
         }
     }  
-}
-
-
-void scene::SpecularIBL::InvokeMapBrowser(std::shared_ptr<Texture>& texture)
-{
-   
 }
 
 void scene::SpecularIBL::OnEvent(int event)

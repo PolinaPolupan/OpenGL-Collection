@@ -90,7 +90,7 @@ scene::NormalMapping::NormalMapping()
 
     planeVAO->AddBuffer(*planeVBO, layout);
 
-    modelsPaths = getObjectsPath();
+    modelsPaths = GetObjectsPath();
 
     planeVAO->Unbind();
     planeVBO->Unbind();

@@ -24,7 +24,7 @@ scene::GeometryShader::GeometryShader()
 	VAO->AddBuffer(*VBO, layout);
 
 	mode = Mode::HOUSES;
-	modelsPaths = getObjectsPath();
+	modelsPaths = GetObjectsPath();
 }
 
 scene::GeometryShader::~GeometryShader()

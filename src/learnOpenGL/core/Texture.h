@@ -49,102 +49,31 @@ class Texture
 public:	
 
     class TextureBuilder {
-    private:
-        GLint m_Target = GL_TEXTURE_2D;
-        GLenum m_Type;
-        int m_Width, m_Height;
-        int m_BPP;
-        GLenum m_InternalFormat, m_DataFormat;
-        unsigned char* m_LocalBuffer;
-        TextureParameters m_Parameters;
-        TextureType m_TextureType;
-
     public:
         friend class Texture;
 
-        TextureBuilder() :
-            m_Target(GL_TEXTURE_2D),
-            m_Type(GL_UNSIGNED_BYTE),
-            m_TextureType(TextureType::Diffuse),
-            m_BPP(0),
-            m_Width(0),
-            m_Height(0),
-            m_InternalFormat(GL_RGBA8),
-            m_DataFormat(GL_RGB),
-            m_LocalBuffer(nullptr),
-            m_Parameters(TextureParameters::Default2D()) {}
+        TextureBuilder();
+        ~TextureBuilder();
 
-        TextureBuilder& SetTarget(GLenum target) {
-            m_Target = target;
-            return *this;
-        }
+        TextureBuilder& SetTarget(GLenum target);
+        TextureBuilder& SetType(GLenum type);
+        TextureBuilder& SetInternalFormat(GLenum internalFormat);
+        TextureBuilder& SetDataFormat(GLenum dataFormat);
+        TextureBuilder& SetSize(int w, int h);
+        TextureBuilder& SetParameters(const TextureParameters& params);
+        TextureBuilder& SetImage(const std::filesystem::path& path, bool gammaCorrection = false, bool flip = true);
+        TextureBuilder& SetImage(const std::string& path, bool gammaCorrection = false, bool flip = true);
+        TextureBuilder& SetImage(const char* path, bool gammaCorrection = false, bool flip = true);
 
-        TextureBuilder& SetType(GLenum type) {
-            m_Type = type;
-            return *this;
-        }
+        Texture& Build();
 
-        TextureBuilder& SetInternalFormat(GLenum internalFormat) {
-            m_InternalFormat = internalFormat;
-            return *this;
-        }
-
-        TextureBuilder& SetDataFormat(GLenum dataFormat) {
-            m_DataFormat = dataFormat;
-            return *this;
-        }
-
-        TextureBuilder& SetSize(int w, int h) {
-            m_Width = w;
-            m_Height = h;
-            return *this;
-        }
-
-        TextureBuilder& SetParameters(const TextureParameters& params) {
-            m_Parameters = params;
-            return *this;
-        }
-
-        TextureBuilder& SetImage(const std::filesystem::path& path, bool gammaCorrection = false, bool flip = true) {
-            SetImage(path.string(), gammaCorrection, flip);
-        }
-
-        TextureBuilder& SetImage(const std::string& path, bool gammaCorrection = false, bool flip = true) {
-            SetImage(path.c_str(), gammaCorrection, flip);
-        }
-
-        TextureBuilder& SetImage(const char* path, bool gammaCorrection = false, bool flip = true) {
-            stbi_set_flip_vertically_on_load(flip);
-
-            m_LocalBuffer = stbi_load(path, &m_Width, &m_Height, &m_BPP, 0);
-
-            m_DataFormat = GL_RGB;
-
-            if (m_BPP == 1)
-            {
-                m_InternalFormat = m_DataFormat = GL_RED;
-            }
-            else if (m_BPP == 3)
-            {
-                m_InternalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
-                m_DataFormat = GL_RGB;
-            }
-            else if (m_BPP == 4)
-            {
-                m_InternalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
-                m_DataFormat = GL_RGBA;
-            }
-
-            std::string pathStr = std::string(path);
-            if (pathStr.find(".hdr") != std::string::npos) {
-                m_InternalFormat = GL_RGB16F;
-                m_Type = GL_FLOAT;
-            }
-        }
-
-        Texture& Build() {
-            return Texture(*this);
-        }
+    private:
+        GLint m_Target = GL_TEXTURE_2D;
+        GLenum m_Type, m_InternalFormat, m_DataFormat;
+        int m_Width, m_Height, m_BPP;
+        unsigned char* m_LocalBuffer;
+        TextureParameters m_Parameters;
+        TextureType m_TextureType;
     };
 
 	Texture();
@@ -166,25 +95,7 @@ public:
 	inline unsigned int GetId() const { return m_RendererId; }
 	inline std::string GetPath() const { return m_FilePath; }
 	inline TextureType GetType() const { return m_TextureType; }
-	inline const char* GetTextureTypeName()
-	{
-		switch (m_TextureType)
-		{
-		case TextureType::Diffuse:
-			return "diffuse";
-		case TextureType::Specular:
-			return "specular";
-		case TextureType::Emission:
-			return "emission";
-		case TextureType::Height:
-			return "height";
-		case TextureType::Normal:
-			return "normal";
-		case TextureType::Standard:
-			return "standard";
-		}
-	}
-
+    const char* GetTextureTypeName() const;
 
 	void Init(const char* path, TextureType textureType, bool gammaCorrection);
 	void InitHdr(const char* path, TextureType textureType, bool gammaCorrection);

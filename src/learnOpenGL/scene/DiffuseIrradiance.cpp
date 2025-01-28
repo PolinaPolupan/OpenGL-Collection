@@ -147,7 +147,7 @@ scene::DiffuseIrradiance::DiffuseIrradiance()
     indexCount = static_cast<unsigned int>(indices.size());
 
 
-    textures = getTextures({ ".hdr" });
+    textures = GetTextures({ ".hdr" });
 
     shader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\IBL.shader"));
     shaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\IBLTextured.shader"));

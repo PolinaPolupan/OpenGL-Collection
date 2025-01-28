@@ -16,7 +16,7 @@ namespace scene
 		std::shared_ptr<VertexBuffer> sphereVBO, cubeVBO, quadVBO;
 		std::shared_ptr<Shader> 
 			pbrShader, 
-			shaderTextured, 
+			pbrShaderTextured,
 			equirectangularToCubemapShader, 
 			backgroundShader, 
 			irradianceShader,
@@ -57,6 +57,9 @@ namespace scene
 		float metallic = 0.0f;
 		float ao = 1.0f;
 
+		ObjectManager objectManager;
+		std::vector<std::string> modelsPaths;
+
 		void OnUpdate(float deltaTime) override;
 		void OnMouseMovedEvent(double posX, double posY) override;
 		void OnMouseScrolledEvent(double offsetX, double offsetY) override;
@@ -66,6 +69,5 @@ namespace scene
 		
 		void BakeMaps();
 		void MapBrowser(std::shared_ptr<Texture>& texture);
-		void InvokeMapBrowser(std::shared_ptr<Texture>& texture);
 	};
 }

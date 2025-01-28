@@ -94,7 +94,7 @@ scene::ParallaxMapping::ParallaxMapping()
 
     planeVAO->AddBuffer(*planeVBO, layout);
 
-    modelsPaths = getObjectsPath();
+    modelsPaths = GetObjectsPath();
 
     planeVAO->Unbind();
     planeVBO->Unbind();

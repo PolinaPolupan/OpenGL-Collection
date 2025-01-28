@@ -83,6 +83,25 @@ void Texture::Unbind() const
 	GLCall(glBindTexture(m_Target, 0));
 }
 
+const char* Texture::GetTextureTypeName() const
+{
+	switch (m_TextureType)
+	{
+	case TextureType::Diffuse:
+		return "diffuse";
+	case TextureType::Specular:
+		return "specular";
+	case TextureType::Emission:
+		return "emission";
+	case TextureType::Height:
+		return "height";
+	case TextureType::Normal:
+		return "normal";
+	case TextureType::Standard:
+		return "standard";
+	}
+}
+
 void Texture::Init(const char* path, TextureType textureType, bool gammaCorrection)
 {
 	stbi_set_flip_vertically_on_load(1);
@@ -201,5 +220,97 @@ void Texture::BuildCubemap()
 
 	if (m_LocalBuffer)
 		stbi_image_free(m_LocalBuffer);
+}
+
+Texture::TextureBuilder::TextureBuilder() :
+	m_Target(GL_TEXTURE_2D),
+	m_Type(GL_UNSIGNED_BYTE),
+	m_TextureType(TextureType::Diffuse),
+	m_BPP(0),
+	m_Width(0),
+	m_Height(0),
+	m_InternalFormat(GL_RGBA8),
+	m_DataFormat(GL_RGB),
+	m_LocalBuffer(nullptr),
+	m_Parameters(TextureParameters::Default2D()) {}
+
+Texture::TextureBuilder::~TextureBuilder()
+{
+	if (m_LocalBuffer)
+		stbi_image_free(m_LocalBuffer);
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetTarget(GLenum target) {
+	m_Target = target;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetType(GLenum type) {
+	m_Type = type;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetInternalFormat(GLenum internalFormat) {
+	m_InternalFormat = internalFormat;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetDataFormat(GLenum dataFormat) {
+	m_DataFormat = dataFormat;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetSize(int w, int h) {
+	m_Width = w;
+	m_Height = h;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetParameters(const TextureParameters& params) {
+	m_Parameters = params;
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetImage(const std::filesystem::path& path, bool gammaCorrection, bool flip) {
+	return SetImage(path.string(), gammaCorrection, flip);
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetImage(const std::string& path, bool gammaCorrection, bool flip) {
+	return SetImage(path.c_str(), gammaCorrection, flip);
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetImage(const char* path, bool gammaCorrection, bool flip) {
+	stbi_set_flip_vertically_on_load(flip);
+
+	m_LocalBuffer = stbi_load(path, &m_Width, &m_Height, &m_BPP, 0);
+
+	m_DataFormat = GL_RGB;
+
+	if (m_BPP == 1)
+	{
+		m_InternalFormat = m_DataFormat = GL_RED;
+	}
+	else if (m_BPP == 3)
+	{
+		m_InternalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+		m_DataFormat = GL_RGB;
+	}
+	else if (m_BPP == 4)
+	{
+		m_InternalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+		m_DataFormat = GL_RGBA;
+	}
+
+	std::string pathStr = std::string(path);
+	if (pathStr.find(".hdr") != std::string::npos) {
+		m_InternalFormat = GL_RGB16F;
+		m_Type = GL_FLOAT;
+	}
+
+	return *this;
+}
+
+Texture& Texture::TextureBuilder::Build() {
+	return Texture(*this);
 }
 

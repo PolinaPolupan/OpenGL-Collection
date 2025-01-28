@@ -62,7 +62,7 @@ scene::BasicLighting::BasicLighting()
     material.SetSpecularMap(GetResourcePath("res/textures/container2_specular.png"));
     material.SetEmissionMap(GetResourcePath("res/textures/matrix.jpg"));
 
-    textures = getTextures();
+    textures = GetTextures();
  
     m_Shader = std::make_unique<Shader>(GetResourcePath("res/shaders/BasicSpotlight.shader"));
     m_VAO = std::make_unique<VertexArray>();

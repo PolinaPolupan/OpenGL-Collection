@@ -4,7 +4,7 @@ scene::ModelLoading::ModelLoading()
     : shader(GetResourcePath("res\\shaders\\StandardSurface.shader")), 
     selection(GetResourcePath("res\\shaders\\Light.shader"))
 {
-    m_ModelsPaths = getObjectsPath();
+    m_ModelsPaths = GetObjectsPath();
 }
 
 scene::ModelLoading::~ModelLoading()

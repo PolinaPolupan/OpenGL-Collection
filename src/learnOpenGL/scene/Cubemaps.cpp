@@ -126,7 +126,7 @@ scene::Cubemaps::Cubemaps():
         GetResourcePath("res\\textures\\skybox\\back.jpg").string()
     };
 
-    cubemapTexture = loadCubemap(faces);
+    cubemapTexture = LoadCubemap(faces);
 
     // shader configuration
     // --------------------
@@ -136,7 +136,7 @@ scene::Cubemaps::Cubemaps():
     skyboxShader.Bind();
     skyboxShader.SetUniform1i("skybox", 0);
 
-    modelsPaths = getObjectsPath();
+    modelsPaths = GetObjectsPath();
 }
 
 scene::Cubemaps::~Cubemaps()
