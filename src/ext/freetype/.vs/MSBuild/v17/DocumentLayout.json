@@ -1,0 +1,104 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\truetype\\truetype.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|solutionrelative:src\\truetype\\truetype.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\pfr\\pfr.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|solutionrelative:src\\pfr\\pfr.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\dlg\\dlgwrap.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|solutionrelative:src\\dlg\\dlgwrap.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\cff\\cff.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}|builds\\windows\\vc2010\\freetype.vcxproj|solutionrelative:src\\cff\\cff.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "truetype.c",
+              "DocumentMoniker": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\truetype\\truetype.c",
+              "RelativeDocumentMoniker": "src\\truetype\\truetype.c",
+              "ToolTip": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\truetype\\truetype.c",
+              "RelativeToolTip": "src\\truetype\\truetype.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-30T07:52:58.732Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "pfr.c",
+              "DocumentMoniker": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\pfr\\pfr.c",
+              "RelativeDocumentMoniker": "src\\pfr\\pfr.c",
+              "ToolTip": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\pfr\\pfr.c",
+              "RelativeToolTip": "src\\pfr\\pfr.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-30T07:52:54.905Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "dlgwrap.c",
+              "DocumentMoniker": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\dlg\\dlgwrap.c",
+              "RelativeDocumentMoniker": "src\\dlg\\dlgwrap.c",
+              "ToolTip": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\dlg\\dlgwrap.c",
+              "RelativeToolTip": "src\\dlg\\dlgwrap.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-30T07:52:53.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "cff.c",
+              "DocumentMoniker": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\cff\\cff.c",
+              "RelativeDocumentMoniker": "src\\cff\\cff.c",
+              "ToolTip": "C:\\Users\\polup\\Downloads\\freetype-2.13.3\\freetype-2.13.3\\src\\cff\\cff.c",
+              "RelativeToolTip": "src\\cff\\cff.c",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-30T07:52:50.765Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

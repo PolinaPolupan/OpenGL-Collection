@@ -117,12 +117,12 @@ void Texture::Init(const char* path, TextureType textureType, bool gammaCorrecti
 	}
 	else if (m_BPP == 3)
 	{
-		internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+		internalFormat = gammaCorrection ? GL_SRGB : GL_COMPRESSED_RGB;
 		dataFormat = GL_RGB;
 	}
 	else if (m_BPP == 4)
 	{
-		internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+		internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_COMPRESSED_RGBA;
 		dataFormat = GL_RGBA;
 	}
 

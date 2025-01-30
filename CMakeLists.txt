@@ -45,7 +45,9 @@ src/learnOpenGL/core/Texture.cpp
 src/learnOpenGL/core/VertexArray.cpp
 src/learnOpenGL/core/VertexBuffer.cpp
 src/learnOpenGL/core/CameraController.cpp
-
+src/learnOpenGL/utils/FileUtils.cpp
+src/learnOpenGL/utils/Utils.cpp
+src/learnOpenGL/scene/Bloom.cpp
 )
 
 set(IMGUI_SOURCE
@@ -56,9 +58,6 @@ src/ext/imgui/imgui_tables.cpp
 src/ext/imgui/imgui_widgets.cpp
 src/ext/imgui/backends/imgui_impl_opengl3.cpp
 src/ext/imgui/backends/imgui_impl_glfw.cpp
-src/learnOpenGL/utils/FileUtils.cpp
-src/learnOpenGL/utils/Utils.cpp
-src/learnOpenGL/scene/Bloom.cpp
 )
 
 set(STB_IMAGE_SOURCE
@@ -71,6 +70,7 @@ add_subdirectory(src/ext/glad EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/glm EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/assimp EXCLUDE_FROM_ALL)
+add_subdirectory(src/ext/freetype EXCLUDE_FROM_ALL)
 
 target_include_directories(LearnOpenGL
 PRIVATE src/ext/assimp/include
@@ -82,6 +82,7 @@ PRIVATE src/ext/stb_image
 PRIVATE src/ext/assimp/include
 PRIVATE src/ext/stb_image
 PRIVATE src/ext/glad/include
+PRIVATE src/ext/freetype/include
 PRIVATE src/learnOpenGL
 PRIVATE src/learnOpenGL/core
 PRIVATE src/learnOpenGL/scene
@@ -94,6 +95,7 @@ target_link_libraries(LearnOpenGL PRIVATE glad)
 target_link_libraries(LearnOpenGL PRIVATE glfw)
 target_link_libraries(LearnOpenGL PRIVATE glm)
 target_link_libraries(LearnOpenGL PRIVATE assimp)
+target_link_libraries(LearnOpenGL PRIVATE freetype)
 
 target_compile_definitions(LearnOpenGL PRIVATE PROJECT_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 

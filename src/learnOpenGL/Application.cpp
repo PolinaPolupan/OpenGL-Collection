@@ -46,6 +46,9 @@
 
 #include "Constants.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+
 
 float mouseX;
 float mouseY;
@@ -67,6 +70,16 @@ int main(void)
     /* Initialize the library */
     if (!glfwInit())
         return -1;
+
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return -1;
+    }
+    else {
+        std::cout << "ERROR::FREETYPE: Success" << std::endl;
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
