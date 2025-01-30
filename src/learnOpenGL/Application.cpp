@@ -41,6 +41,7 @@
 #include "PBR.h"
 #include "DiffuseIrradiance.h"
 #include "SpecularIBL.h"
+#include "TextRendering.h"
 
 #include "assimp/Importer.hpp"
 
@@ -70,16 +71,6 @@ int main(void)
     /* Initialize the library */
     if (!glfwInit())
         return -1;
-
-    FT_Library ft;
-    if (FT_Init_FreeType(&ft))
-    {
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-        return -1;
-    }
-    else {
-        std::cout << "ERROR::FREETYPE: Success" << std::endl;
-    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -155,6 +146,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::PBR>("PBR");
     sceneMenu->RegisterScene<scene::DiffuseIrradiance>("Diffuse Irradiance");
     sceneMenu->RegisterScene<scene::SpecularIBL>("Specular IBL");
+    sceneMenu->RegisterScene<scene::TextRendering>("Text Rendering");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;

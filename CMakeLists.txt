@@ -35,6 +35,7 @@ src/learnOpenGL/Renderer.cpp
 "src/learnOpenGL/scene/PBR.cpp"
 "src/learnOpenGL/scene/DiffuseIrradiance.cpp"
 "src/learnOpenGL/scene/SpecularIBL.cpp"
+"src/learnOpenGL/scene/TextRendering.cpp"
 "src/learnOpenGL/core/Lights.cpp"
 "src/learnOpenGL/core/Mesh.cpp"
 "src/learnOpenGL/core/Model.cpp"
@@ -64,7 +65,7 @@ set(STB_IMAGE_SOURCE
 src/ext/stb_image/stb_image.cpp
 )
 
-add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE} )
+add_executable(LearnOpenGL ${SOURCE_FILES} ${IMGUI_SOURCE} ${STB_IMAGE_SOURCE})
 
 add_subdirectory(src/ext/glad EXCLUDE_FROM_ALL)
 add_subdirectory(src/ext/glfw EXCLUDE_FROM_ALL)
