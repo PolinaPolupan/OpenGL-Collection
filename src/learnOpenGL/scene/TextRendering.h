@@ -13,21 +13,21 @@ namespace scene {
 		~TextRendering();
 
 		struct Character {
-			unsigned int TextureID; // ID handle of the glyph texture
+			std::shared_ptr<Texture> Texture;
 			glm::ivec2   Size;      // Size of glyph
 			glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
 			unsigned int Advance;   // Horizontal offset to advance to next glyph
 		} character;
 
 		std::map<GLchar, Character> characters;
-		unsigned int VAO, VBO;
-		unsigned int texture;
+		std::shared_ptr<VertexArray> VAO;
+		std::shared_ptr<VertexBuffer> VBO;
+
 		char textBuf[128] = "";
 		FT_Library ft;
 		FT_Face face;
 
 		std::shared_ptr<Shader> shader;
-	//	std::shared_ptr<Texture> texture;
 
 		CameraController cameraController;
 		Renderer renderer;

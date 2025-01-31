@@ -56,7 +56,6 @@ public:
         friend class Texture;
 
         TextureBuilder();
-        ~TextureBuilder();
 
         TextureBuilder& SetTarget(GLenum target);
         TextureBuilder& SetType(GLenum type);
@@ -67,6 +66,7 @@ public:
         TextureBuilder& SetImage(const std::filesystem::path& path, bool gammaCorrection = false, bool flip = true);
         TextureBuilder& SetImage(const std::string& path, bool gammaCorrection = false, bool flip = true);
         TextureBuilder& SetImage(const char* path, bool gammaCorrection = false, bool flip = true);
+        TextureBuilder& SetBuffer(unsigned char* buffer, unsigned int size);
 
         Texture& Build();
 
@@ -80,7 +80,8 @@ public:
     };
 
 	Texture();
-	Texture(const Texture::TextureBuilder& builder);
+	Texture(Texture::TextureBuilder& builder);
+    Texture(const Texture& texture) = delete;
 	Texture(const std::string& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);
 	Texture(const char* path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);  
 	Texture(const std::filesystem::path& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);

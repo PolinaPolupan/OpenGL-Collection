@@ -9,7 +9,7 @@ Texture::Texture():
 	m_BPP(0)
 {}
 
-Texture::Texture(const TextureBuilder & builder)
+Texture::Texture(TextureBuilder & builder)
 {
 	m_LocalBuffer = builder.m_LocalBuffer;
 	m_Width = builder.m_Width;
@@ -70,6 +70,10 @@ Texture::Texture(const std::filesystem::path& path, TextureType textureType, boo
 Texture::~Texture()
 {
 	GLCall(glDeleteTextures(1, &m_RendererId));
+	if (m_LocalBuffer) {
+		free(m_LocalBuffer);
+		m_LocalBuffer = nullptr;
+	}
 }
 
 void Texture::Bind(unsigned int slot) const
@@ -117,12 +121,12 @@ void Texture::Init(const char* path, TextureType textureType, bool gammaCorrecti
 	}
 	else if (m_BPP == 3)
 	{
-		internalFormat = gammaCorrection ? GL_SRGB : GL_COMPRESSED_RGB;
+		internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
 		dataFormat = GL_RGB;
 	}
 	else if (m_BPP == 4)
 	{
-		internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_COMPRESSED_RGBA;
+		internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
 		dataFormat = GL_RGBA;
 	}
 
@@ -138,8 +142,10 @@ void Texture::Init(const char* path, TextureType textureType, bool gammaCorrecti
 	glGenerateMipmap(m_Target);
 	Unbind();
 
-	if (m_LocalBuffer)
+	if (m_LocalBuffer) {
 		stbi_image_free(m_LocalBuffer);
+		m_LocalBuffer = nullptr;
+	}		
 }
 
 void Texture::InitHdr(const char* path, TextureType textureType, bool gammaCorrection)
@@ -195,8 +201,10 @@ void Texture::Build()
 
 	Unbind();
 
-	if (m_LocalBuffer)
-		stbi_image_free(m_LocalBuffer);
+	if (m_LocalBuffer) {
+		free(m_LocalBuffer);
+		m_LocalBuffer = nullptr;
+	}
 }
 
 void Texture::BuildCubemap()
@@ -218,8 +226,10 @@ void Texture::BuildCubemap()
 
 	Unbind();
 
-	if (m_LocalBuffer)
-		stbi_image_free(m_LocalBuffer);
+	if (m_LocalBuffer) {
+		free(m_LocalBuffer);
+		m_LocalBuffer = nullptr;
+	}
 }
 
 Texture::TextureBuilder::TextureBuilder() :
@@ -233,12 +243,6 @@ Texture::TextureBuilder::TextureBuilder() :
 	m_DataFormat(GL_RGB),
 	m_LocalBuffer(nullptr),
 	m_Parameters(TextureParameters::Default2D()) {}
-
-Texture::TextureBuilder::~TextureBuilder()
-{
-	if (m_LocalBuffer)
-		stbi_image_free(m_LocalBuffer);
-}
 
 Texture::TextureBuilder& Texture::TextureBuilder::SetTarget(GLenum target) {
 	m_Target = target;
@@ -307,6 +311,16 @@ Texture::TextureBuilder& Texture::TextureBuilder::SetImage(const char* path, boo
 		m_Type = GL_FLOAT;
 	}
 
+	return *this;
+}
+
+Texture::TextureBuilder& Texture::TextureBuilder::SetBuffer(unsigned char* buffer, unsigned int size) {
+	if (buffer) {
+		if (m_LocalBuffer) delete[] m_LocalBuffer;		
+		m_LocalBuffer = (unsigned char*)malloc(size);
+		memcpy(m_LocalBuffer, buffer, size);
+	}
+	
 	return *this;
 }
 

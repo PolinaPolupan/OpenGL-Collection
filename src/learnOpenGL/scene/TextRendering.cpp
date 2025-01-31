@@ -44,28 +44,19 @@ scene::TextRendering::TextRendering()
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 continue;
             }
-            // generate texture
-           // Texture::TextureBuilder builder;
-          //  Texture
-            unsigned int texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                GL_RED,
-                face->glyph->bitmap.width,
-                face->glyph->bitmap.rows,
-                0,
-                GL_RED,
-                GL_UNSIGNED_BYTE,
-                face->glyph->bitmap.buffer
-            );
-            // set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+     
+            std::shared_ptr<Texture> texture;
+            Texture::TextureParameters parameters;
+            Texture::TextureBuilder builder;
+            builder
+                .SetParameters(parameters)
+                .SetDataFormat(GL_RED)
+                .SetInternalFormat(GL_RED)
+                .SetSize(face->glyph->bitmap.width, face->glyph->bitmap.rows)
+                .SetBuffer(face->glyph->bitmap.buffer, face->glyph->bitmap.rows * face->glyph->bitmap.width);
+            
+            texture = std::make_shared<Texture>(builder);
+        
             // now store character for later use
             character = {
                 texture,
@@ -74,8 +65,8 @@ scene::TextRendering::TextRendering()
                 static_cast<unsigned int>(face->glyph->advance.x)
             };
             characters.insert(std::pair<char, Character>(c, character));
+            texture->Unbind();
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
     // destroy FreeType once we're finished
     FT_Done_Face(face);
@@ -84,22 +75,29 @@ scene::TextRendering::TextRendering()
 
     // configure VAO/VBO for texture quads
     // -----------------------------------
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    VAO = std::make_shared<VertexArray>();
+    VertexBuffer::Builder bufferBuilder;
+    bufferBuilder
+        .SetUsage(GL_DYNAMIC_DRAW)
+        .SetData(NULL, sizeof(float) * 6 * 4);
 
+    VBO = std::make_shared<VertexBuffer>(bufferBuilder);
+
+    VertexBufferLayout layout;
+    layout.Push<float>(4);
+
+    VAO->AddBuffer(*VBO, layout);
+
+    VAO->Unbind();
+    VBO->Unbind();
     shader->Unbind();
 }
 
 scene::TextRendering::~TextRendering()
 {
-	shader->Unbind();
+    VAO->Unbind();
+    VBO->Unbind();
+    shader->Unbind();
 }
 
 void scene::TextRendering::OnUpdate(float deltaTime)
@@ -137,7 +135,7 @@ void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std
     // activate corresponding render state	
     shader->Bind();
     shader->SetUniform3f("textColor", color);
-    glBindVertexArray(VAO);
+    VAO->Bind();
 
     // iterate through all characters
     std::string::const_iterator c;
@@ -161,17 +159,17 @@ void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
         // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        ch.Texture->Bind();
         // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        VBO->Bind();
+        VBO->SetBufferAt(vertices, sizeof(vertices), 0);
+        VAO->Bind();
+    
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        ch.Texture->Unbind();
     }
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    VAO->Unbind();
 }
