@@ -22,10 +22,12 @@ namespace scene {
 		std::map<GLchar, Character> characters;
 		unsigned int VAO, VBO;
 		unsigned int texture;
+		char textBuf[128] = "";
 		FT_Library ft;
 		FT_Face face;
 
 		std::shared_ptr<Shader> shader;
+	//	std::shared_ptr<Texture> texture;
 
 		CameraController cameraController;
 		Renderer renderer;

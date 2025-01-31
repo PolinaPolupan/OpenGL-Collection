@@ -161,26 +161,26 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
   
 
-    std::vector<std::shared_ptr<Texture>> defaultMaps = LoadMaterialTextures(material, aiTextureType_NONE, TextureType::Diffuse);
+    std::vector<std::shared_ptr<Texture>> defaultMaps = LoadMaterialTextures(material, aiTextureType_NONE, Texture::TextureType::Diffuse);
     textures.insert(textures.end(), defaultMaps.begin(), defaultMaps.end());
 
-    std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::Diffuse);
+    std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, Texture::TextureType::Diffuse);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-    std::vector<std::shared_ptr<Texture>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::Specular);
+    std::vector<std::shared_ptr<Texture>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, Texture::TextureType::Specular);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-    std::vector<std::shared_ptr<Texture>>  normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::Normal);
+    std::vector<std::shared_ptr<Texture>>  normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::Normal);
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-    std::vector<std::shared_ptr<Texture>> heightMaps = LoadMaterialTextures(material, aiTextureType_DISPLACEMENT, TextureType::Height);
+    std::vector<std::shared_ptr<Texture>> heightMaps = LoadMaterialTextures(material, aiTextureType_DISPLACEMENT, Texture::TextureType::Height);
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
     
 
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName)
+std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Texture::TextureType typeName)
 {
     std::vector<std::shared_ptr<Texture>> textures;
 

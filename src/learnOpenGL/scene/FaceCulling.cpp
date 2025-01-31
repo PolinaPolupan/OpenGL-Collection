@@ -2,7 +2,7 @@
 
 scene::FaceCulling::FaceCulling() : 
     shader(GetResourcePath("res\\shaders\\FaceCulling.shader")),
-    cubeTexture(GetResourcePath("res\\textures\\wall.jpg"), TextureType::Diffuse)
+    cubeTexture(GetResourcePath("res\\textures\\wall.jpg"), Texture::TextureType::Diffuse)
 {
     float cubeVertices[] = {
         // positions          // texture Coords

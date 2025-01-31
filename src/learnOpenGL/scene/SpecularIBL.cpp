@@ -179,7 +179,7 @@ scene::SpecularIBL::SpecularIBL()
     normalTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
     aoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
 
-    TextureParameters envParameters;
+    Texture::TextureParameters envParameters;
     envParameters = envParameters.DefaultCubeMap();
     envParameters.minFilter = GL_LINEAR_MIPMAP_LINEAR;
 
@@ -193,7 +193,7 @@ scene::SpecularIBL::SpecularIBL()
 
     envCubemapTexture = std::make_shared<Texture>(envBuilder);
 
-    TextureParameters irrParameters;
+    Texture::TextureParameters irrParameters;
     irrParameters = irrParameters.DefaultCubeMap();
 
     Texture::TextureBuilder builder;
@@ -207,7 +207,7 @@ scene::SpecularIBL::SpecularIBL()
     irradianceMapTexture = std::make_shared<Texture>(builder);
 
 
-    TextureParameters prefilterParameters;
+    Texture::TextureParameters prefilterParameters;
     prefilterParameters = prefilterParameters.DefaultCubeMap();
     prefilterParameters.minFilter = GL_LINEAR_MIPMAP_LINEAR;
 
@@ -221,7 +221,7 @@ scene::SpecularIBL::SpecularIBL()
 
     prefilterMapTexture = std::make_shared<Texture>(prefilterBuilder);
 
-    TextureParameters brdfLUTParameters;
+    Texture::TextureParameters brdfLUTParameters;
     brdfLUTParameters = brdfLUTParameters.Default2D();
     brdfLUTParameters.wrapS = GL_CLAMP_TO_EDGE;
     brdfLUTParameters.wrapT = GL_CLAMP_TO_EDGE;

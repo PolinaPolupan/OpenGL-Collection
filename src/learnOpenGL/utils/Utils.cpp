@@ -127,7 +127,7 @@ std::vector<std::shared_ptr<Texture>> GetTextures(const std::vector<std::string>
     std::vector<std::shared_ptr<Texture>> textures;
     for (auto& path : GetTexturesPath(extensions, paths))
     {
-        textures.push_back(std::make_unique<Texture>(path, TextureType::Standard));
+        textures.push_back(std::make_unique<Texture>(path, Texture::TextureType::Standard));
     }
 
     return textures;

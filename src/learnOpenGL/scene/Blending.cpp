@@ -1,10 +1,10 @@
 #include "Blending.h"
 
 scene::Blending::Blending() : 
-    cubeTexture(GetResourcePath("res/textures/wall.jpg"), TextureType::Diffuse),
-    floorTexture(GetResourcePath("res/textures/wall.jpg"), TextureType::Diffuse),
-    transparentTexture(GetResourcePath("res/textures/grass.png"), TextureType::Diffuse),
-    windowTexture(GetResourcePath("res/textures/blending_transparent_window.png"), TextureType::Diffuse),
+    cubeTexture(GetResourcePath("res/textures/wall.jpg"), Texture::TextureType::Diffuse),
+    floorTexture(GetResourcePath("res/textures/wall.jpg"), Texture::TextureType::Diffuse),
+    transparentTexture(GetResourcePath("res/textures/grass.png"), Texture::TextureType::Diffuse),
+    windowTexture(GetResourcePath("res/textures/blending_transparent_window.png"), Texture::TextureType::Diffuse),
     shader(GetResourcePath("res/shaders/Blending.shader"))
 {
     float cubeVertices[] = {

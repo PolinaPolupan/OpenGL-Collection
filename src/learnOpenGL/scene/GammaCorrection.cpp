@@ -28,8 +28,8 @@ scene::GammaCorrection::GammaCorrection()
 
     planeVAO->AddBuffer(*planeVBO, layout);
 
-    texture = std::make_shared<Texture>(GetResourcePath("res\\textures\\wood.png"), TextureType::Diffuse, false);
-    textureGammaCorrected = std::make_shared<Texture>(GetResourcePath("res\\textures\\wood.png"), TextureType::Diffuse, true);
+    texture = std::make_shared<Texture>(GetResourcePath("res\\textures\\wood.png"), Texture::TextureType::Diffuse, false);
+    textureGammaCorrected = std::make_shared<Texture>(GetResourcePath("res\\textures\\wood.png"), Texture::TextureType::Diffuse, true);
 
     texture->Bind();
     shader->Bind();

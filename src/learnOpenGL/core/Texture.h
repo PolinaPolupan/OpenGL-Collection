@@ -5,48 +5,51 @@
 #include "Renderer.h"
 #include <filesystem>
 
-struct TextureParameters {
-
-    GLint wrapS;
-    GLint wrapT;
-    GLint wrapR;
-    GLint minFilter;
-    GLint magFilter;
-
-    constexpr TextureParameters(
-        GLint wrapS = GL_REPEAT,
-        GLint wrapT = GL_REPEAT,
-        GLint wrapR = GL_REPEAT,
-        GLint minFilter = GL_LINEAR,
-        GLint magFilter = GL_LINEAR
-    ) : wrapS(wrapS), wrapT(wrapT), wrapR(wrapR), minFilter(minFilter), magFilter(magFilter) {}
-
-    static constexpr TextureParameters Default2D() {
-        return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR };
-    }
-
-    static constexpr TextureParameters DefaultCubeMap() {
-        return { GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR };
-    }
-
-    static constexpr TextureParameters NearestFilter() {
-        return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST };
-    }
-};
-
-enum TextureType
-{
-    Diffuse,
-    Specular,
-    Emission,
-    Standard,
-    Height,
-    Normal
-};
 
 class Texture
 {
 public:	
+
+    enum TextureType
+    {
+        Diffuse,
+        Specular,
+        Emission,
+        Standard,
+        Height,
+        Normal
+    };
+
+
+    struct TextureParameters {
+
+        GLint wrapS;
+        GLint wrapT;
+        GLint wrapR;
+        GLint minFilter;
+        GLint magFilter;
+
+        constexpr TextureParameters(
+            GLint wrapS = GL_REPEAT,
+            GLint wrapT = GL_REPEAT,
+            GLint wrapR = GL_REPEAT,
+            GLint minFilter = GL_LINEAR,
+            GLint magFilter = GL_LINEAR
+        ) : wrapS(wrapS), wrapT(wrapT), wrapR(wrapR), minFilter(minFilter), magFilter(magFilter) {}
+
+        static constexpr TextureParameters Default2D() {
+            return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR };
+        }
+
+        static constexpr TextureParameters DefaultCubeMap() {
+            return { GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR };
+        }
+
+        static constexpr TextureParameters NearestFilter() {
+            return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST };
+        }
+    };
+
 
     class TextureBuilder {
     public:

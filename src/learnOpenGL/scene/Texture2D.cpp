@@ -17,7 +17,7 @@ scene::Texture2D::Texture2D()
 
     m_Shader = std::make_unique<Shader>(GetResourcePath("res/shaders/Basic.shader"));
     m_VAO = std::make_unique<VertexArray>();
-    m_Texture = std::make_unique<Texture>(GetResourcePath("res/textures/vader.png"), TextureType::Diffuse);
+    m_Texture = std::make_unique<Texture>(GetResourcePath("res/textures/vader.png"), Texture::TextureType::Diffuse);
 
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));

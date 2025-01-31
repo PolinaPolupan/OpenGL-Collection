@@ -45,6 +45,8 @@ scene::TextRendering::TextRendering()
                 continue;
             }
             // generate texture
+           // Texture::TextureBuilder builder;
+          //  Texture
             unsigned int texture;
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
@@ -121,13 +123,13 @@ void scene::TextRendering::OnRender()
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WIDTH), 0.0f, static_cast<float>(HEIGHT));
     shader->Bind();
     shader->SetUniformMat4f("projection", projection);
-
-    RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-    RenderText(shader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+  
+    RenderText(shader, std::string(textBuf), WIDTH/4, HEIGHT/2, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 }
 
 void scene::TextRendering::OnImGuiRender()
 {
+    ImGui::InputTextWithHint("Input", "Enter text", textBuf, IM_ARRAYSIZE(textBuf));
 }
 
 void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std::string text, float x, float y, float scale, glm::vec3 color)
