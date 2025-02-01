@@ -116,24 +116,24 @@ void Renderer::RenderMesh(Mesh& mesh, Shader& shader, glm::vec3 pos, glm::vec3 s
 	for (unsigned int i = 0; i < mesh.textures.size(); i++)
 	{
 
-		Texture::TextureType type = mesh.textures[i]->GetType();
+		Texture::Type type = mesh.textures[i]->GetType();
 		std::string name = mesh.textures[i]->GetTextureTypeName();
 
 		switch (type)
 		{
-        case Texture::TextureType::Diffuse:
+        case Texture::Type::Diffuse:
 			number = std::to_string(diffuseNr++);
 			break;
 
-        case Texture::TextureType::Specular:
+        case Texture::Type::Specular:
 			number = std::to_string(specularNr++);
 			break;
 
-        case Texture::TextureType::Normal:
+        case Texture::Type::Normal:
             number = std::to_string(normalNr++);
             break;
 
-        case Texture::TextureType::Height:
+        case Texture::Type::Height:
             number = std::to_string(heightNr++);
             break;
 		}

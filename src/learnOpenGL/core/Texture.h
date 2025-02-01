@@ -10,7 +10,7 @@ class Texture
 {
 public:	
 
-    enum TextureType
+    enum Type
     {
         Diffuse,
         Specular,
@@ -20,8 +20,7 @@ public:
         Normal
     };
 
-
-    struct TextureParameters {
+    struct Parameters {
 
         GLint wrapS;
         GLint wrapT;
@@ -29,7 +28,7 @@ public:
         GLint minFilter;
         GLint magFilter;
 
-        constexpr TextureParameters(
+        constexpr Parameters(
             GLint wrapS = GL_REPEAT,
             GLint wrapT = GL_REPEAT,
             GLint wrapR = GL_REPEAT,
@@ -37,84 +36,90 @@ public:
             GLint magFilter = GL_LINEAR
         ) : wrapS(wrapS), wrapT(wrapT), wrapR(wrapR), minFilter(minFilter), magFilter(magFilter) {}
 
-        static constexpr TextureParameters Default2D() {
+        static constexpr Parameters Default2D() {
             return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR };
         }
 
-        static constexpr TextureParameters DefaultCubeMap() {
+        static constexpr Parameters DefaultCubeMap() {
             return { GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR };
         }
 
-        static constexpr TextureParameters NearestFilter() {
+        static constexpr Parameters NearestFilter() {
             return { GL_REPEAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST };
         }
     };
 
 
-    class TextureBuilder {
+    class Builder {
     public:
         friend class Texture;
 
-        TextureBuilder();
+        Builder();
 
-        TextureBuilder& SetTarget(GLenum target);
-        TextureBuilder& SetType(GLenum type);
-        TextureBuilder& SetInternalFormat(GLenum internalFormat);
-        TextureBuilder& SetDataFormat(GLenum dataFormat);
-        TextureBuilder& SetSize(int w, int h);
-        TextureBuilder& SetParameters(const TextureParameters& params);
-        TextureBuilder& SetImage(const std::filesystem::path& path, bool gammaCorrection = false, bool flip = true);
-        TextureBuilder& SetImage(const std::string& path, bool gammaCorrection = false, bool flip = true);
-        TextureBuilder& SetImage(const char* path, bool gammaCorrection = false, bool flip = true);
-        TextureBuilder& SetBuffer(unsigned char* buffer, unsigned int size);
+        Builder& SetTarget(GLenum target);
+        Builder& SetType(GLenum type);
+        Builder& SetInternalFormat(GLenum internalFormat);
+        Builder& SetDataFormat(GLenum dataFormat);
+        Builder& SetSize(int w, int h);
+        Builder& SetParameters(const Parameters& params);
+        Builder& SetImage(const std::filesystem::path& path, bool gammaCorrection = false, bool flip = true);
+        Builder& SetImage(const std::string& path, bool gammaCorrection = false, bool flip = true);
+        Builder& SetImage(const char* path, bool gammaCorrection = false, bool flip = true);
+        Builder& SetBuffer(void* buffer, unsigned int size);
 
         Texture& Build();
 
     private:
-        GLint m_Target = GL_TEXTURE_2D;
-        GLenum m_Type, m_InternalFormat, m_DataFormat;
-        int m_Width, m_Height, m_BPP;
-        unsigned char* m_LocalBuffer;
-        TextureParameters m_Parameters;
-        TextureType m_TextureType;
+        void* m_LocalBuffer;
+        int m_Width,
+            m_Height,
+            m_BPP;
+        GLenum
+            m_InternalFormat,
+            m_DataFormat,
+            m_Target,
+            m_Type;
+        std::string m_FilePath;
+        Parameters m_Parameters;
+        Type m_TextureType;
     };
 
-	Texture();
-	Texture(Texture::TextureBuilder& builder);
+	Texture(Texture::Builder& builder);
     Texture(const Texture& texture) = delete;
-	Texture(const std::string& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);
-	Texture(const char* path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);  
-	Texture(const std::filesystem::path& path, TextureType textureType = TextureType::Diffuse, bool gammaCorrection = false);
+	Texture(const std::string& path, Type textureType = Type::Diffuse, bool gammaCorrection = false);
+	Texture(const char* path, Type textureType = Type::Diffuse, bool gammaCorrection = false);  
+	Texture(const std::filesystem::path& path, Type textureType = Type::Diffuse, bool gammaCorrection = false);
 	~Texture();
 
 	virtual void Bind(unsigned int slot = 0) const;
 	virtual void Unbind() const;
 
 	inline void SetType(GLint type) { m_Type = type; }
-	inline void SetParameters(const TextureParameters& parameters) { m_Parameters = parameters; }
+	inline void SetParameters(const Parameters& parameters) { m_Parameters = parameters; }
 	inline void SetResolution(const glm::vec2& res) { m_Width = res.x, m_Height = res.y; }
 	inline void SetId(unsigned int id) { m_RendererId = id; }
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
 	inline unsigned int GetId() const { return m_RendererId; }
 	inline std::string GetPath() const { return m_FilePath; }
-	inline TextureType GetType() const { return m_TextureType; }
+	inline Type GetType() const { return m_TextureType; }
     const char* GetTextureTypeName() const;
-
-	void Init(const char* path, TextureType textureType, bool gammaCorrection);
-	void InitHdr(const char* path, TextureType textureType, bool gammaCorrection);
 
 	void Build();
 	void BuildCubemap();
 
-protected:
-	unsigned int m_RendererId;
-	std::string m_FilePath;
-	TextureType m_TextureType;
-	unsigned char* m_LocalBuffer;
-	int m_Width, m_Height, m_BPP;
-	TextureParameters m_Parameters;
-	GLenum m_InternalFormat, m_DataFormat;
-	GLenum m_Target = GL_TEXTURE_2D;
-	GLenum m_Type;
+private:
+	unsigned int m_RendererId;	
+	void* m_LocalBuffer;
+	int m_Width, 
+        m_Height, 
+        m_BPP;	
+	GLenum 
+        m_InternalFormat,
+        m_DataFormat,
+        m_Target,
+        m_Type;
+    std::string m_FilePath;
+    Parameters m_Parameters;
+    Type m_TextureType;
 };

@@ -144,8 +144,8 @@ void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std
             continue;
         }
 
-        Texture::TextureParameters parameters;
-        Texture::TextureBuilder builder;
+        Texture::Parameters parameters;
+        Texture::Builder builder;
         builder
             .SetParameters(parameters)
             .SetDataFormat(GL_RED)

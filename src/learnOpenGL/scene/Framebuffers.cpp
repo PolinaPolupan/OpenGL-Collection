@@ -60,8 +60,8 @@ std::vector<double> calculateMedian(int length)
 scene::Framebuffers::Framebuffers():
 	shader(GetResourcePath("res\\shaders\\5.1.framebuffers.vs")),
     screenShader(GetResourcePath("res\\shaders\\5.1.framebuffers_screen.vs")),
-	cubeTexture(GetResourcePath("res\\textures\\wall.jpg"), Texture::TextureType::Diffuse),
-    planeTexture(GetResourcePath("res\\textures\\wall.jpg"), Texture::TextureType::Diffuse)
+	cubeTexture(GetResourcePath("res\\textures\\wall.jpg"), Texture::Type::Diffuse),
+    planeTexture(GetResourcePath("res\\textures\\wall.jpg"), Texture::Type::Diffuse)
 {
     unsigned int planeIndices[] = { 0, 1, 2, 3, 4, 5 };
 

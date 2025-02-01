@@ -161,7 +161,7 @@ void scene::BasicLighting::OnRender()
 
 bool show_edit = false;
 LightType lightType = LightType::Default;
-Texture::TextureType textureType = Texture::TextureType::Diffuse;
+Texture::Type textureType = Texture::Type::Diffuse;
 
 void scene::BasicLighting::OnImGuiRender()
 {

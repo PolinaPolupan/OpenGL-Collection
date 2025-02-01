@@ -179,11 +179,11 @@ scene::SpecularIBL::SpecularIBL()
     normalTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
     aoTexture = std::make_shared<Texture>(GetResourcePath("res\\textures\\container.jpg"));
 
-    Texture::TextureParameters envParameters;
+    Texture::Parameters envParameters;
     envParameters = envParameters.DefaultCubeMap();
     envParameters.minFilter = GL_LINEAR_MIPMAP_LINEAR;
 
-    Texture::TextureBuilder envBuilder;
+    Texture::Builder envBuilder;
     envBuilder
         .SetTarget(GL_TEXTURE_CUBE_MAP)
         .SetInternalFormat(GL_RGB16F)
@@ -193,10 +193,10 @@ scene::SpecularIBL::SpecularIBL()
 
     envCubemapTexture = std::make_shared<Texture>(envBuilder);
 
-    Texture::TextureParameters irrParameters;
+    Texture::Parameters irrParameters;
     irrParameters = irrParameters.DefaultCubeMap();
 
-    Texture::TextureBuilder builder;
+    Texture::Builder builder;
     builder
         .SetTarget(GL_TEXTURE_CUBE_MAP)
         .SetInternalFormat(GL_RGB16F)
@@ -207,11 +207,11 @@ scene::SpecularIBL::SpecularIBL()
     irradianceMapTexture = std::make_shared<Texture>(builder);
 
 
-    Texture::TextureParameters prefilterParameters;
+    Texture::Parameters prefilterParameters;
     prefilterParameters = prefilterParameters.DefaultCubeMap();
     prefilterParameters.minFilter = GL_LINEAR_MIPMAP_LINEAR;
 
-    Texture::TextureBuilder prefilterBuilder;
+    Texture::Builder prefilterBuilder;
     prefilterBuilder
         .SetTarget(GL_TEXTURE_CUBE_MAP)
         .SetInternalFormat(GL_RGB16F)
@@ -221,12 +221,12 @@ scene::SpecularIBL::SpecularIBL()
 
     prefilterMapTexture = std::make_shared<Texture>(prefilterBuilder);
 
-    Texture::TextureParameters brdfLUTParameters;
+    Texture::Parameters brdfLUTParameters;
     brdfLUTParameters = brdfLUTParameters.Default2D();
     brdfLUTParameters.wrapS = GL_CLAMP_TO_EDGE;
     brdfLUTParameters.wrapT = GL_CLAMP_TO_EDGE;
 
-    Texture::TextureBuilder brdfLUTBuilder;
+    Texture::Builder brdfLUTBuilder;
     brdfLUTBuilder
         .SetInternalFormat(GL_RG16F)
         .SetDataFormat(GL_RG)

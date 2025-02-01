@@ -11,7 +11,7 @@
 #include "imgui.h"
 #include "FileUtils.h"
 
-static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, Material& material, Texture::TextureType& TextureType)
+static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, Material& material, Texture::Type& TextureType)
 {
     for (int i = 0; i < textures.size(); i++)
     {
@@ -27,17 +27,17 @@ static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, 
         {
             switch (TextureType)
             {
-            case Texture::TextureType::Diffuse:
+            case Texture::Type::Diffuse:
                 material.SetDiffuseMap(textures[i]->GetPath());
 
                 std::cout << "Diffuse map " << textures[i]->GetPath() << " set" << "\n";
                 break;
-            case Texture::TextureType::Specular:
+            case Texture::Type::Specular:
                 material.SetSpecularMap(textures[i]->GetPath());
 
                 std::cout << "Specular map " << textures[i]->GetPath() << " set" << "\n";
                 break;
-            case Texture::TextureType::Emission:
+            case Texture::Type::Emission:
                 material.SetEmissionMap(textures[i]->GetPath());
 
                 std::cout << "Emission map " << textures[i]->GetPath() << " set" << "\n";
@@ -49,12 +49,12 @@ static void materialMapBrowser(std::vector<std::shared_ptr<Texture>>& textures, 
     }
 }
 
-static void diffuseUi(Material& material, bool& showMaterialBrowser, Texture::TextureType& TextureType)
+static void diffuseUi(Material& material, bool& showMaterialBrowser, Texture::Type& TextureType)
 {
     ImGui::Text("Diffuse");
     if (ImGui::Button("Set diffuse map"))
     {
-        TextureType = Texture::TextureType::Diffuse;
+        TextureType = Texture::Type::Diffuse;
         showMaterialBrowser = true;
     }
     ImGui::SameLine();
@@ -65,12 +65,12 @@ static void diffuseUi(Material& material, bool& showMaterialBrowser, Texture::Te
     ImGui::ColorEdit3("Diffuse color", &material.diffuseColor[0]);
 }
 
-static void specularUi(Material& material, bool& showMaterialBrowser, Texture::TextureType& TextureType)
+static void specularUi(Material& material, bool& showMaterialBrowser, Texture::Type& TextureType)
 {
     ImGui::Text("Specular");
     if (ImGui::Button("Set specular map"))
     {
-        TextureType = Texture::TextureType::Specular;
+        TextureType = Texture::Type::Specular;
         showMaterialBrowser = true;
     }
     ImGui::SameLine();
@@ -82,12 +82,12 @@ static void specularUi(Material& material, bool& showMaterialBrowser, Texture::T
     ImGui::SliderFloat("Shininess", &material.shininess, 1.f, 256.f);
 }
 
-static void emissionUi(Material& material, bool& showMaterialBrowser, Texture::TextureType& TextureType)
+static void emissionUi(Material& material, bool& showMaterialBrowser, Texture::Type& TextureType)
 {
     ImGui::Text("Emission");
     if (ImGui::Button("Set emission map"))
     {
-        TextureType = Texture::TextureType::Emission;
+        TextureType = Texture::Type::Emission;
         showMaterialBrowser = true;
     }
     ImGui::SameLine();

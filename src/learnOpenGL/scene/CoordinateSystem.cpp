@@ -60,7 +60,7 @@ scene::CoordinateSystem::CoordinateSystem()
     m_CameraSpeed = 2.5f;
     m_Shader = std::make_unique<Shader>(GetResourcePath("res/shaders/CoordinateSystem.shader"));
     m_VAO = std::make_unique<VertexArray>();
-    m_Texture = std::make_unique<Texture>(GetResourcePath("res/textures/container.jpg"), Texture::TextureType::Diffuse);
+    m_Texture = std::make_unique<Texture>(GetResourcePath("res/textures/container.jpg"), Texture::Type::Diffuse);
     Camera camera(
         glm::vec3(0.0f, 0.0f, 3.0f),
         glm::vec3(0.0f, 0.0f, -1.0f),

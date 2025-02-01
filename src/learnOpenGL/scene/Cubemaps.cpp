@@ -3,7 +3,7 @@
 scene::Cubemaps::Cubemaps():
     shader(GetResourcePath("res/shaders/Cubemaps.shader")),
     skyboxShader(GetResourcePath("res/shaders/Skybox.shader")),
-    cubeTexture(GetResourcePath("res/textures/wall.jpg"), Texture::TextureType::Diffuse)
+    cubeTexture(GetResourcePath("res/textures/wall.jpg"), Texture::Type::Diffuse)
 {
     float skyboxVertices[] = { 
         // positions          
