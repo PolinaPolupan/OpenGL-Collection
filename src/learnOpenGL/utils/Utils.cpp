@@ -79,18 +79,18 @@ LightType GetLightTypeByName(std::string name)
     return LightType::Default;
 }
 
-std::vector<std::string> GetTexturesPath(const std::vector<std::string>& extensions, const std::vector<std::string>& paths)
+std::vector<std::string> GetResourcesPath(const std::vector<std::string>& extensions, const std::vector<std::string>& paths, bool filenameOnly)
 {
-    std::vector<std::string> textures;
+    std::vector<std::string> resources;
 
     for (auto& path : paths) {
-        LoadTexturesFromPath(GetResourcePath(path), textures, extensions);
+        LoadResourcesFromPath(GetResourcePath(path), resources, extensions, filenameOnly);
     }
    
-    return textures;
+    return resources;
 }
 
-void LoadTexturesFromPath(const std::filesystem::path& path, std::vector<std::string>& textures, const std::vector<std::string>& extensions)
+void LoadResourcesFromPath(const std::filesystem::path& path, std::vector<std::string>& resources, const std::vector<std::string>& extensions, bool filenameOnly)
 {
     for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
     {
@@ -99,7 +99,11 @@ void LoadTexturesFromPath(const std::filesystem::path& path, std::vector<std::st
         for (auto& ext : extensions) {
             if (path.find(ext) != std::string::npos) {
                 std::cout << path << std::endl;
-                textures.push_back(path);
+                if (filenameOnly) {
+                    resources.push_back(entry.path().filename().string());
+                } else {
+                    resources.push_back(path);
+                }  
                 break;
             }
         }
@@ -125,7 +129,7 @@ std::vector<std::string> GetObjectsPath()
 std::vector<std::shared_ptr<Texture>> GetTextures(const std::vector<std::string>& extensions, const std::vector<std::string>& paths)
 {
     std::vector<std::shared_ptr<Texture>> textures;
-    for (auto& path : GetTexturesPath(extensions, paths))
+    for (auto& path : GetResourcesPath(extensions, paths))
     {
         textures.push_back(std::make_unique<Texture>(path, Texture::TextureType::Standard));
     }

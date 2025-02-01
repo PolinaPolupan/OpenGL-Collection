@@ -113,7 +113,7 @@ void Texture::Init(const char* path, TextureType textureType, bool gammaCorrecti
 	m_LocalBuffer = stbi_load(path, &m_Width, &m_Height, &m_BPP, 0);
 
 	GLenum internalFormat;
-	GLenum dataFormat;
+	GLenum dataFormat = GL_RGBA;
 
 	if (m_BPP == 1)
 	{

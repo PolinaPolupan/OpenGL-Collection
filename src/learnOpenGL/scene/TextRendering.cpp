@@ -7,6 +7,7 @@ scene::TextRendering::TextRendering()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	shader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Text.shader"));
+    fonts = GetResourcesPath({".ttf"}, {"res/fonts"}, true);
 
     // FreeType
     // --------
@@ -18,7 +19,8 @@ scene::TextRendering::TextRendering()
     }
 
     // find path to font
-    std::string font_name = GetResourcePath("res\\fonts\\Roboto-VariableFont_wdth,wght.ttf").string();
+    std::string font_name = GetResourcePath("res\\fonts\\" + fonts[0]).string();
+
     if (font_name.empty())
     {
         std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
@@ -28,50 +30,6 @@ scene::TextRendering::TextRendering()
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
         exit(-1);
     }
-    else {
-        // set size to load glyphs as
-        FT_Set_Pixel_Sizes(face, 0, 48);
-
-        // disable byte-alignment restriction
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        // load first 128 characters of ASCII set
-        for (unsigned char c = 0; c < 128; c++)
-        {
-            // Load character glyph 
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-            {
-                std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-                continue;
-            }
-     
-            std::shared_ptr<Texture> texture;
-            Texture::TextureParameters parameters;
-            Texture::TextureBuilder builder;
-            builder
-                .SetParameters(parameters)
-                .SetDataFormat(GL_RED)
-                .SetInternalFormat(GL_RED)
-                .SetSize(face->glyph->bitmap.width, face->glyph->bitmap.rows)
-                .SetBuffer(face->glyph->bitmap.buffer, face->glyph->bitmap.rows * face->glyph->bitmap.width);
-            
-            texture = std::make_shared<Texture>(builder);
-        
-            // now store character for later use
-            character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                static_cast<unsigned int>(face->glyph->advance.x)
-            };
-            characters.insert(std::pair<char, Character>(c, character));
-            texture->Unbind();
-        }
-    }
-    // destroy FreeType once we're finished
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
-
 
     // configure VAO/VBO for texture quads
     // -----------------------------------
@@ -98,6 +56,8 @@ scene::TextRendering::~TextRendering()
     VAO->Unbind();
     VBO->Unbind();
     shader->Unbind();
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
 }
 
 void scene::TextRendering::OnUpdate(float deltaTime)
@@ -122,32 +82,94 @@ void scene::TextRendering::OnRender()
     shader->Bind();
     shader->SetUniformMat4f("projection", projection);
   
-    RenderText(shader, std::string(textBuf), WIDTH/4, HEIGHT/2, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+    RenderText(shader, std::string(textBuf), WIDTH/4, HEIGHT/2, glm::vec3(0.5, 0.8f, 0.2f));
 }
 
 void scene::TextRendering::OnImGuiRender()
 {
     ImGui::InputTextWithHint("Input", "Enter text", textBuf, IM_ARRAYSIZE(textBuf));
+    ImGui::SliderInt("Size", &size, 1, 400);
+
+    static int item_current_idx = 0; // Here we store our selection data as an index.
+    if (ImGui::BeginListBox("fonts"))
+    {
+        for (int n = 0; n < fonts.size(); n++)
+        {
+            const bool is_selected = (item_current_idx == n);
+            if (ImGui::Selectable((fonts[n]).c_str(), is_selected))
+            {
+                item_current_idx = n;
+
+                FT_Done_Face(face);
+
+                std::string font_name = GetResourcePath("res\\fonts\\" + fonts[n]).string();
+                if (font_name.empty())
+                {
+                    std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
+                    exit(-1);
+                }
+                if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
+                    std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+                    exit(-1);
+                }
+            }
+        }
+        ImGui::EndListBox();
+    }
 }
 
-void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std::string text, float x, float y, float scale, glm::vec3 color)
+void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std::string text, float x, float y, glm::vec3 color)
 {
     // activate corresponding render state	
     shader->Bind();
     shader->SetUniform3f("textColor", color);
     VAO->Bind();
 
+    std::string font_name = GetResourcePath("res\\fonts\\Roboto-VariableFont_wdth,wght.ttf").string();
+
+    FT_Set_Pixel_Sizes(face, 0, size);
+
+    // disable byte-alignment restriction
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     // iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = characters[*c];
+        // Load character glyph 
+        
+        if (FT_Load_Char(face, *c, FT_LOAD_RENDER))
+        {
+            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+            continue;
+        }
 
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+        Texture::TextureParameters parameters;
+        Texture::TextureBuilder builder;
+        builder
+            .SetParameters(parameters)
+            .SetDataFormat(GL_RED)
+            .SetInternalFormat(GL_RED)
+            .SetSize(face->glyph->bitmap.width, face->glyph->bitmap.rows)
+            .SetBuffer(face->glyph->bitmap.buffer, face->glyph->bitmap.rows * face->glyph->bitmap.width);
 
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
+        texture = std::make_shared<Texture>(builder);
+
+        // now store character for later use
+        character = {
+            texture,
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            static_cast<unsigned int>(face->glyph->advance.x)
+        };
+
+        Character ch = character;
+
+        float xpos = x + ch.Bearing.x;
+        float ypos = y - (ch.Size.y - ch.Bearing.y);
+
+        float w = ch.Size.x;
+        float h = ch.Size.y;
         // update VBO for each character
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },
@@ -168,7 +190,7 @@ void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        x += (ch.Advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         ch.Texture->Unbind();
     }
     VAO->Unbind();
