@@ -583,13 +583,13 @@ void scene::SpecularIBL::BakeMaps()
 
     // pbr: setup framebuffer
     // ----------------------
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
+    captureFBO = std::make_shared<Framebuffer>();
+    captureRBO = std::make_shared<Renderbuffer>();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+    captureFBO->Bind();
+    captureRBO->Bind();
+    captureRBO->SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
+    captureFBO->AttachRenderBuffer(*captureRBO, GL_DEPTH_ATTACHMENT);
 
     // pbr: set up projection and view matrices for capturing data onto the 6 cubemap face directions
     // ----------------------------------------------------------------------------------------------
@@ -611,25 +611,25 @@ void scene::SpecularIBL::BakeMaps()
     equirectangularToCubemapShader->SetUniformMat4f("projection", captureProjection);
     hdr->Bind();
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    captureFBO->Bind();
     for (unsigned int i = 0; i < 6; ++i)
     {
         equirectangularToCubemapShader->Bind();
         equirectangularToCubemapShader->SetUniformMat4f("view", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemapTexture->GetId(), 0);
+        captureFBO->AttachTexture(*envCubemapTexture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderer.Draw(*cubeVAO, *cubeIBO, *equirectangularToCubemapShader);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    captureFBO->Unbind();
 
     // then let OpenGL generate mipmaps from first mip face (combatting visible dots artifact)
     envCubemapTexture->Bind();
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+    captureFBO->Bind();
+    captureRBO->Bind();
+    captureRBO->SetStorage(GL_DEPTH_COMPONENT24, 32, 32);
 
     // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
     // -----------------------------------------------------------------------------
@@ -640,17 +640,17 @@ void scene::SpecularIBL::BakeMaps()
     envCubemapTexture->Bind();
 
     glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    captureFBO->Bind();
     for (unsigned int i = 0; i < 6; ++i)
     {
         irradianceShader->Bind();
         irradianceShader->SetUniformMat4f("view", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMapTexture->GetId(), 0);
+        captureFBO->AttachTexture(*irradianceMapTexture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderer.Draw(*cubeVAO, *cubeIBO, *irradianceShader);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    captureFBO->Unbind();
 
     // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
     // ----------------------------------------------------------------------------------------------------
@@ -659,7 +659,7 @@ void scene::SpecularIBL::BakeMaps()
     prefilterShader->SetUniformMat4f("projection", captureProjection);
     envCubemapTexture->Bind();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    captureFBO->Bind();
     unsigned int maxMipLevels = 5;
     for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
     {
@@ -667,8 +667,8 @@ void scene::SpecularIBL::BakeMaps()
         // reisze framebuffer according to mip-level size.
         unsigned int mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
         unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+        captureRBO->Bind();
+        captureRBO->SetStorage(GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
         glViewport(0, 0, mipWidth, mipHeight);
 
         float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -677,26 +677,26 @@ void scene::SpecularIBL::BakeMaps()
         {
             prefilterShader->Bind();
             prefilterShader->SetUniformMat4f("view", captureViews[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMapTexture->GetId(), mip);
+            captureFBO->AttachTexture(*prefilterMapTexture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             renderer.Draw(*cubeVAO, *cubeIBO, *prefilterShader);
         }
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    captureFBO->Unbind();
 
     // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture->GetId(), 0);
+    captureFBO->Bind();
+    captureRBO->Bind();
+    captureRBO->SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
+    captureFBO->AttachTexture(*brdfLUTTexture, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D);
 
     glViewport(0, 0, 512, 512);
     brdfShader->Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderer.Draw(*quadVAO, *quadIBO, *brdfShader);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    captureFBO->Unbind();
 
     glViewport(0, 0, WIDTH, HEIGHT);
 }

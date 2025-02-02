@@ -98,7 +98,9 @@ public:
 	inline void SetParameters(const Parameters& parameters) { m_Parameters = parameters; }
 	inline void SetResolution(const glm::vec2& res) { m_Width = res.x, m_Height = res.y; }
 	inline void SetId(unsigned int id) { m_RendererId = id; }
-	inline int GetWidth() const { return m_Width; }
+	
+    inline const GLenum GetTarget() const { return m_Target; }
+    inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
 	inline unsigned int GetId() const { return m_RendererId; }
 	inline std::string GetPath() const { return m_FilePath; }

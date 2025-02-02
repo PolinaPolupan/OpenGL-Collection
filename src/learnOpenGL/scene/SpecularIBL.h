@@ -49,8 +49,8 @@ namespace scene
 		unsigned int indexCount;
 		bool textured = false;
 
-		unsigned int captureFBO;
-		unsigned int captureRBO;
+		std::shared_ptr<Framebuffer> captureFBO;
+		std::shared_ptr<Renderbuffer> captureRBO;
 
 		float transparency = 0.0f;
 		float roughness = 0.5f;

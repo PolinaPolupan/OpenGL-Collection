@@ -58,6 +58,9 @@ scene::TextRendering::~TextRendering()
     shader->Unbind();
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
 }
 
 void scene::TextRendering::OnUpdate(float deltaTime)
@@ -192,6 +195,9 @@ void scene::TextRendering::RenderText(const std::shared_ptr<Shader>& shader, std
         // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.Advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         ch.Texture->Unbind();
+        texture->Unbind();
     }
+    shader->Unbind();
+    VBO->Unbind();
     VAO->Unbind();
 }
