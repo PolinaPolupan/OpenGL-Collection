@@ -42,6 +42,7 @@
 #include "DiffuseIrradiance.h"
 #include "SpecularIBL.h"
 #include "TextRendering.h"
+#include "OIT.h"
 
 #include "assimp/Importer.hpp"
 
@@ -72,8 +73,8 @@ int main(void)
     if (!glfwInit())
         return -1;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
@@ -147,6 +148,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::DiffuseIrradiance>("Diffuse Irradiance");
     sceneMenu->RegisterScene<scene::SpecularIBL>("Specular IBL");
     sceneMenu->RegisterScene<scene::TextRendering>("Text Rendering");
+    sceneMenu->RegisterScene<scene::OIT>("OIT");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;

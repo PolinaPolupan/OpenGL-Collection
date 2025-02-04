@@ -29,6 +29,19 @@ class Renderer
 public:
     Renderer();
     void Clear();
+    void ClearBuffer(GLbitfield mask = (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+    void ClearColor(const glm::vec4& color = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+    void EnableDepthTesting(GLenum func = GL_LESS, GLboolean flag = GL_TRUE);
+    void DisableDepthTesting();
+    void EnableBlending();
+    void EnableDepthWriting();
+    void DisableDepthWriting();
+    void DisableBlending();
+    void SetBlendingFunction(GLenum sfactor, GLenum dfactor);
+    void SetTargetBlendingFunction(GLuint buf, GLenum sfactor = GL_ONE, GLenum dfactor = GL_ZERO);
+    void SetBlendingEquation(GLenum mode);
+    void SetDepthFunction(GLenum func);
+    void ClearTargetBufferFv(GLenum buffer, GLint drawBuffer, const glm::vec4& value);
     void Submit(Camera& camera);
     void RenderLight(Light& light, Shader& shader);
     void RenderObject(Model& model, Shader& shader);

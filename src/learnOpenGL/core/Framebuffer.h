@@ -27,16 +27,19 @@ public:
 	void AttachTexture(
 		GLenum attachment,
 		GLenum textarget, 
-		GLuint texture,
+		GLuint texture = GL_TEXTURE_2D,
 		GLint level = 0) const;
 
 	void AttachTexture(
 		const Texture& texture,
 		GLenum attachment,
-		GLenum textarget,
+		GLenum textarget = GL_TEXTURE_2D,
 		GLint level = 0) const;
 
 	void AttachRenderBuffer(const Renderbuffer& renderbuffer, GLenum attachment) const;
+
+	void DrawBuffers(GLsizei n, const GLenum* bufs) const;
+	void DrawBuffers(GLsizei n, const std::vector<GLenum>& bufs) const;
 
 private:
 	unsigned int m_RendererId;

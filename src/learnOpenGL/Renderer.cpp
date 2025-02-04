@@ -29,7 +29,78 @@ Renderer::Renderer() : m_Selection(GetResourcePath("res\\shaders\\Light.shader")
 
 void Renderer::Clear()
 {
-    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+    ClearColor();
+    ClearBuffer();
+    EnableDepthTesting();
+    GLCall(glDisable(GL_CULL_FACE));
+    DisableBlending();
+}
+
+void Renderer::ClearBuffer(GLbitfield mask)
+{
+    GLCall(glClear(mask));
+}
+
+void Renderer::ClearColor(const glm::vec4& color)
+{
+    GLCall(glClearColor(color.r, color.g, color.b, color.a));
+}
+
+void Renderer::EnableDepthTesting(GLenum func, GLboolean flag)
+{
+    GLCall(glEnable(GL_DEPTH_TEST));
+    GLCall(glDepthFunc(func));
+    GLCall(glDepthMask(flag));
+}
+
+void Renderer::DisableDepthTesting()
+{
+    GLCall(glDisable(GL_DEPTH_TEST));
+}
+
+void Renderer::EnableBlending()
+{
+    GLCall(glEnable(GL_BLEND));
+}
+
+void Renderer::EnableDepthWriting()
+{
+    GLCall(glDepthMask(GL_TRUE));
+}
+
+void Renderer::DisableDepthWriting()
+{
+    GLCall(glDepthMask(GL_FALSE));
+}
+
+void Renderer::DisableBlending()
+{
+    GLCall(glDisable(GL_BLEND));
+}
+
+void Renderer::SetBlendingFunction(GLenum sfactor, GLenum dfactor)
+{
+    GLCall(glBlendFunc(sfactor, dfactor));
+}
+
+void Renderer::SetTargetBlendingFunction(GLuint buf, GLenum sfactor, GLenum dfactor)
+{
+    GLCall(glBlendFunci(buf, sfactor, dfactor));
+}
+
+void Renderer::SetBlendingEquation(GLenum mode)
+{
+    GLCall(glBlendEquation(mode));
+}
+
+void Renderer::SetDepthFunction(GLenum func)
+{
+    GLCall(glDepthFunc(func));
+}
+
+void Renderer::ClearTargetBufferFv(GLenum buffer, GLint drawBuffer, const glm::vec4& value)
+{
+    GLCall(glClearBufferfv(buffer, drawBuffer, &value[0]));
 }
 
 void Renderer::Submit(Camera& camera)

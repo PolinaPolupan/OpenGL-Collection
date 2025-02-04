@@ -36,6 +36,7 @@ src/learnOpenGL/scene/PBR.cpp
 src/learnOpenGL/scene/DiffuseIrradiance.cpp
 src/learnOpenGL/scene/SpecularIBL.cpp
 src/learnOpenGL/scene/TextRendering.cpp
+src/learnOpenGL/scene/OIT.cpp
 src/learnOpenGL/core/Lights.cpp
 src/learnOpenGL/core/Mesh.cpp
 src/learnOpenGL/core/Model.cpp

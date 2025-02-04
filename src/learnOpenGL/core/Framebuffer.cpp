@@ -35,11 +35,13 @@ void Framebuffer::Unbind() const
 
 void Framebuffer::AttachTexture(GLenum attachment, GLenum textarget, GLuint texture, GLint level) const
 {
+	Bind();
 	GLCall(glFramebufferTexture2D(m_Target, attachment, textarget, texture, level));
 }
 
 void Framebuffer::AttachTexture(const Texture& texture, GLenum attachment, GLenum textarget, GLint level) const
 {
+	Bind();
 	GLCall(glFramebufferTexture2D(m_Target, attachment, textarget, texture.GetId(), level));
 }
 
@@ -47,6 +49,18 @@ void Framebuffer::AttachRenderBuffer(const Renderbuffer& renderbuffer, GLenum at
 {
 	Bind();
 	GLCall(glFramebufferRenderbuffer(m_Target, attachment, GL_RENDERBUFFER, renderbuffer.GetId()));
+}
+
+void Framebuffer::DrawBuffers(GLsizei n, const GLenum* bufs) const
+{
+	Bind();
+	GLCall(glDrawBuffers(n, bufs));
+}
+
+void Framebuffer::DrawBuffers(GLsizei n, const std::vector<GLenum>& bufs) const
+{
+	Bind();
+	GLCall(glDrawBuffers(n, &bufs[0]));
 }
 
 Framebuffer::Builder::Builder():

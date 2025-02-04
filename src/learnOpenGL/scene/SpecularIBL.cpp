@@ -240,13 +240,13 @@ scene::SpecularIBL::SpecularIBL()
     textures = GetTextures({ ".hdr" });
     mapTextures = GetTextures({ ".jpeg", ".jpg", ".png", ".tga"}, {"res/textures"});
 
-    pbrShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecular.shader"));
-    pbrShaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\PBRSpecularTextured.shader"));
+    pbrShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SpecularIBL\\PBRSpecular.shader"));
+    pbrShaderTextured = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SpecularIBL\\PBRSpecularTextured.shader"));
     equirectangularToCubemapShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\EquirectangularToCubemap.shader"));
     backgroundShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Background.shader"));
     irradianceShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Irradiance.shader"));
-    prefilterShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\Prefilter.shader"));
-    brdfShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\BRDF.shader"));
+    prefilterShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SpecularIBL\\Prefilter.shader"));
+    brdfShader = std::make_shared<Shader>(GetResourcePath("res\\shaders\\SpecularIBL\\BRDF.shader"));
 
     albedoColor = glm::vec3(0.5, 0, 0);
 
