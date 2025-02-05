@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "imgui.h"
 #include "ObjectManager.h"
+#include <functional>
 
 
 static void ObjectUi(Model& object)
@@ -21,7 +22,7 @@ static void ObjectUi(Model& object)
     ImGui::SliderFloat3("Scale", &object.scale[0], -20.f, 20.f);
 }
 
-static void ObjectsList(ObjectManager& objectManager)
+static void ObjectsList(ObjectManager& objectManager, std::function<void(Model&)> objectUi = ObjectUi)
 {
     static int item_current_idx = 0; // Here we store our selection data as an index.
     if (ImGui::TreeNode("Objects"))
