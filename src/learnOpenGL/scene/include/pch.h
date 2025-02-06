@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "Bone.h"
 #include "Model.h"
 #include "Lights.h"
 #include "ObjectManager.h"
