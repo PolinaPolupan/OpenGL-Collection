@@ -21,10 +21,11 @@ struct VertexBufferElement
 		switch (type)
 		{
 		case GL_FLOAT:			return sizeof(GLfloat);
+		case GL_INT:			return sizeof(GLint);
 		case GL_UNSIGNED_INT:	return sizeof(GLuint);
 		case GL_UNSIGNED_BYTE:	return sizeof(GLbyte);
 		}
-		//ASSERT(false);
+		ASSERT(false);
 		return 0;
 	}
 };
@@ -37,7 +38,14 @@ public:
 	template<typename T>
 	void Push(unsigned int count)
 	{
-		//static_assert(false);
+		static_assert(false);
+	}
+
+	template<>
+	void Push<int>(unsigned int count)
+	{
+		m_Elements.push_back({ GL_INT, count, GL_FALSE });
+		m_Stride += VertexBufferElement::GetSizeOfType(GL_INT) * count;
 	}
 
 	template<>
