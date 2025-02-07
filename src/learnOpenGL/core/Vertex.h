@@ -5,24 +5,24 @@
 constexpr int MAX_BONE_INFLUENCE = 4;
 
 struct Vertex {
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TexCoords;
-    glm::vec3 Tangent;
-    glm::vec3 Bitangent;
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texCoords;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
 
-    int BoneIDs[MAX_BONE_INFLUENCE];
-    float Weights[MAX_BONE_INFLUENCE];
+    int boneIDs[MAX_BONE_INFLUENCE];
+    float weights[MAX_BONE_INFLUENCE];
 
     Vertex(): 
-        Position(0.0f), 
-        Normal(0.0f), 
-        TexCoords(0.0f),
-        Tangent(0.0f), 
-        Bitangent(0.0f) {
+        position(0.0f), 
+        normal(0.0f), 
+        texCoords(0.0f),
+        tangent(0.0f), 
+        bitangent(0.0f) {
         for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-            BoneIDs[i] = -1;
-            Weights[i] = 0.0f;
+            boneIDs[i] = -1;
+            weights[i] = 0.0f;
         }
     }
 };

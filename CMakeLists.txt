@@ -49,7 +49,8 @@ src/learnOpenGL/core/Texture.cpp
 src/learnOpenGL/core/VertexArray.cpp
 src/learnOpenGL/core/VertexBuffer.cpp
 src/learnOpenGL/core/CameraController.cpp
-src/learnOpenGL/core/Bone.cpp
+src/learnOpenGL/core/NodeAnim.cpp
+src/learnOpenGL/core/Bone.h
 src/learnOpenGL/utils/FileUtils.cpp
 src/learnOpenGL/utils/Utils.cpp
 src/learnOpenGL/utils/AssimpGLMHelpers.h

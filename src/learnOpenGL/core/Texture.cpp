@@ -78,7 +78,7 @@ void Texture::Build()
 	GLCall(glBindTexture(m_Target, m_RendererId));
 
 	GLCall(glTexImage2D(m_Target, 0, m_InternalFormat, m_Width, m_Height, 0, m_DataFormat, m_Type, m_LocalBuffer));
-	GLCall(glGenerateMipmap(m_Target));
+	//GLCall(glGenerateMipmap(m_Target));
 
 	GLCall(glTexParameteri(m_Target, GL_TEXTURE_WRAP_S, m_Parameters.wrapS));
 	GLCall(glTexParameteri(m_Target, GL_TEXTURE_WRAP_T, m_Parameters.wrapT));

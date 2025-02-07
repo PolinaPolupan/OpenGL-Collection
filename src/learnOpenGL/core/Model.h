@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Mesh.h"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <unordered_map>
-#include "Texture.h"
-#include "Constants.h"
-#include "Material.h"
 #include <filesystem>
+#include <map>
 
+
+class Mesh;
+class Bone;
+class Texture;
 
 class Model
 {
@@ -36,13 +36,18 @@ public:
     glm::vec3 scale;
 
 private:
+    void ProcessNode(aiNode* node, const aiScene* scene);
+    Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+    std::vector<std::shared_ptr<Texture>> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Texture::Type typeName);
+    void ExtractBones(std::vector<Vertex>& vertices, aiMesh* mesh);
+
+private:
     Assimp::Importer m_Importer;
     std::vector<Mesh> m_Meshes;
     std::string m_Directory;
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_TexturesLoaded;
 
-    void ProcessNode(aiNode* node, const aiScene* scene);
-    Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-    std::vector<std::shared_ptr<Texture>> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Texture::Type typeName);
+    std::map<std::string, Bone> m_BoneMap; 
+    int m_BoneCounter = 0;
 };
 
