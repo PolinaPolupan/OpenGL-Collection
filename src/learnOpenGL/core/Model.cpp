@@ -191,7 +191,7 @@ std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(aiMaterial* ma
 void Model::ExtractBones(std::vector<Vertex>& vertices, aiMesh* mesh) {
     for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
         int boneId = -1;
-        std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+        std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();       
 
         if (m_BoneMap.find(boneName) == m_BoneMap.end()) {
             int id = m_BoneCounter;
@@ -218,6 +218,8 @@ void Model::ExtractBones(std::vector<Vertex>& vertices, aiMesh* mesh) {
                 vertices[vertexId].weights[weightIndex] = weight;
             }
         }
+
+        std::cout << "Bone: " << boneName << " is proccessed \n";
     }
 
     std::cout << mesh->mNumBones << " bones are proccessed successfully \n";

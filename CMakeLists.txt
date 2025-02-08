@@ -37,6 +37,7 @@ src/learnOpenGL/scene/DiffuseIrradiance.cpp
 src/learnOpenGL/scene/SpecularIBL.cpp
 src/learnOpenGL/scene/TextRendering.cpp
 src/learnOpenGL/scene/OIT.cpp
+src/learnOpenGL/scene/SkeletalAnimation.cpp
 src/learnOpenGL/core/Lights.cpp
 src/learnOpenGL/core/Mesh.cpp
 src/learnOpenGL/core/Model.cpp
@@ -51,6 +52,8 @@ src/learnOpenGL/core/VertexBuffer.cpp
 src/learnOpenGL/core/CameraController.cpp
 src/learnOpenGL/core/NodeAnim.cpp
 src/learnOpenGL/core/Bone.h
+src/learnOpenGL/core/Animation.cpp
+src/learnOpenGL/core/Animator.cpp
 src/learnOpenGL/utils/FileUtils.cpp
 src/learnOpenGL/utils/Utils.cpp
 src/learnOpenGL/utils/AssimpGLMHelpers.h

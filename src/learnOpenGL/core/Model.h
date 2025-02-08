@@ -23,6 +23,7 @@ public:
     void LoadModel(const std::string& path);
     void LoadModel();
 
+    inline const std::map<std::string, Bone>& GetBoneMap() const { return m_BoneMap; }
     std::vector<Mesh>& GetMeshes() { return m_Meshes; }
     std::unordered_map<std::string, std::shared_ptr<Texture>>& GetTexturesLoaded() { return m_TexturesLoaded; }
 

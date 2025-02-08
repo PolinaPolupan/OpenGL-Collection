@@ -6,11 +6,16 @@
 #include "AssimpGLMHelpers.h"
 
 
-NodeAnim::NodeAnim(const std::string& name, int ID, const aiNodeAnim* channel): 
-    m_Name(name),             
+NodeAnim::NodeAnim(int ID, const aiNodeAnim* channel): 
+    m_Name(channel->mNodeName.C_Str()),             
     m_Id(ID),                 
     m_LocalTransform(glm::mat4(1.0f))
 {
+    std::cout << channel->mNodeName.C_Str() << " is proccessing \n";
+    std::cout << "Position keys: " << channel->mNumPositionKeys << "\t";
+    std::cout << "Rotation keys: " << channel->mNumRotationKeys << "\t";
+    std::cout << "Scaling keys: " << channel->mNumScalingKeys << "\n";
+
     for (int positionIndex = 0; positionIndex < channel->mNumPositionKeys; ++positionIndex) {
         aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
         float timeStamp = channel->mPositionKeys[positionIndex].mTime;
@@ -18,6 +23,10 @@ NodeAnim::NodeAnim(const std::string& name, int ID, const aiNodeAnim* channel):
         data.position = AssimpGLMHelpers::GetGLMVec(aiPosition);
         data.timeStamp = timeStamp;
         m_Positions.push_back(data);
+
+      /*  std::cout << "Postion key " << positionIndex << " is proccessed \n";
+        std::cout << "Position: " << data.position.x << " " << data.position.y << " " << data.position.z << "\t";
+        std::cout << "Timestamp :" << data.timeStamp << "\n";*/
     }
 
     for (int rotationIndex = 0; rotationIndex < channel->mNumRotationKeys; ++rotationIndex) {
@@ -27,15 +36,23 @@ NodeAnim::NodeAnim(const std::string& name, int ID, const aiNodeAnim* channel):
         data.orientation = AssimpGLMHelpers::GetGLMQuat(aiOrientation);
         data.timeStamp = timeStamp;
         m_Rotations.push_back(data);
+
+  /*      std::cout << "Rotation key " << rotationIndex << " is proccessed \n";
+        std::cout << "Orientation: " << data.orientation.x << " " << data.orientation.y << " " << data.orientation.z << "\t";
+        std::cout << "Timestamp :" << data.timeStamp << "\n";*/
     }
 
-    for (int keyIndex = 0; keyIndex < channel->mNumScalingKeys; ++keyIndex) {
-        aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
-        float timeStamp = channel->mScalingKeys[keyIndex].mTime;
+    for (int scalingIndex = 0; scalingIndex < channel->mNumScalingKeys; ++scalingIndex) {
+        aiVector3D scale = channel->mScalingKeys[scalingIndex].mValue;
+        float timeStamp = channel->mScalingKeys[scalingIndex].mTime;
         KeyScale data;
         data.scale = AssimpGLMHelpers::GetGLMVec(scale);
         data.timeStamp = timeStamp;
         m_Scales.push_back(data);
+
+      /*  std::cout << "Scaling key " << scalingIndex << " is proccessed \n";
+        std::cout << "Orientation: " << data.scale.x << " " << data.scale.y << " " << data.scale.z << "\t";
+        std::cout << "Timestamp :" << data.timeStamp << "\n";*/
     }
 }
 
@@ -43,7 +60,7 @@ void NodeAnim::Update(float animationTime) {
     glm::mat4 translation = InterpolatePosition(animationTime);
     glm::mat4 rotation = InterpolateRotation(animationTime);
     glm::mat4 scale = InterpolateScaling(animationTime);
-    m_LocalTransform = translation * rotation * scale;
+    m_LocalTransform = scale * rotation * translation;
 }
 
 float NodeAnim::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime) {

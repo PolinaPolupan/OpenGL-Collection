@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "Bone.h"
 #include "NodeAnim.h"
+#include "Animation.h"
+#include "Animator.h"
 #include "Model.h"
 #include "Lights.h"
 #include "ObjectManager.h"

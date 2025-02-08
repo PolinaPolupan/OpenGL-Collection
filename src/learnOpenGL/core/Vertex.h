@@ -1,8 +1,7 @@
 #pragma once
 
 #include "glm.hpp"
-
-constexpr int MAX_BONE_INFLUENCE = 4;
+#include "Constants.h"
 
 struct Vertex {
     glm::vec3 position;

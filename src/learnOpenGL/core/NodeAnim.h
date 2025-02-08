@@ -41,8 +41,9 @@ public:
             timeStamp(0.0f) {}
     };
 
+    NodeAnim() = default;
     // Reads keyframes from aiNodeAnim
-	NodeAnim(const std::string& name, int id, const aiNodeAnim* channel);
+	NodeAnim(int id, const aiNodeAnim* channel);
 
     inline const glm::mat4& GetLocalTransform() const { return m_LocalTransform; }
     inline const std::string& GetName() const { return m_Name; }

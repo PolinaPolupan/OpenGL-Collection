@@ -43,6 +43,7 @@
 #include "SpecularIBL.h"
 #include "TextRendering.h"
 #include "OIT.h"
+#include "SkeletalAnimation.h"
 
 #include "assimp/Importer.hpp"
 
@@ -149,6 +150,7 @@ int main(void)
     sceneMenu->RegisterScene<scene::SpecularIBL>("Specular IBL");
     sceneMenu->RegisterScene<scene::TextRendering>("Text Rendering");
     sceneMenu->RegisterScene<scene::OIT>("OIT");
+    sceneMenu->RegisterScene<scene::SkeletalAnimation>("Skeletal Animation");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     int nrAttributes;
